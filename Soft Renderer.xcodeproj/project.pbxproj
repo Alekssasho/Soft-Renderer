@@ -10,6 +10,8 @@
 		2CD07F0B18C899B3006E6AFE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2CD07F0918C899B3006E6AFE /* InfoPlist.strings */; };
 		2CD07F0D18C899B3006E6AFE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CD07F0C18C899B3006E6AFE /* main.cpp */; };
 		2CD07F3518C89B97006E6AFE /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD07F3418C89B97006E6AFE /* libSDL2-2.0.0.dylib */; };
+		2CFFB70B18D2052800468668 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CFFB70918D2052800468668 /* Camera.cpp */; };
+		2CFFB70E18D2090400468668 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CFFB70C18D2090400468668 /* Mesh.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +20,10 @@
 		2CD07F0A18C899B3006E6AFE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2CD07F0C18C899B3006E6AFE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		2CD07F3418C89B97006E6AFE /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../usr/local/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		2CFFB70918D2052800468668 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		2CFFB70A18D2052800468668 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
+		2CFFB70C18D2090400468668 /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		2CFFB70D18D2090400468668 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +68,10 @@
 			children = (
 				2CD07F0C18C899B3006E6AFE /* main.cpp */,
 				2CD07F0718C899B3006E6AFE /* Supporting Files */,
+				2CFFB70918D2052800468668 /* Camera.cpp */,
+				2CFFB70A18D2052800468668 /* Camera.h */,
+				2CFFB70C18D2090400468668 /* Mesh.cpp */,
+				2CFFB70D18D2090400468668 /* Mesh.h */,
 			);
 			path = "Soft Renderer";
 			sourceTree = "<group>";
@@ -138,6 +148,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CFFB70E18D2090400468668 /* Mesh.cpp in Sources */,
+				2CFFB70B18D2052800468668 /* Camera.cpp in Sources */,
 				2CD07F0D18C899B3006E6AFE /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,6 +289,7 @@
 				2CD07F3018C899B4006E6AFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

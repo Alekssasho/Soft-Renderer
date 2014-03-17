@@ -5,8 +5,9 @@
 //  Created by Aleksandar Angelov on 3/6/14.
 //  Copyright (c) 2014 Aleksandar Angelov. All rights reserved.
 //
-#include <iostream>
 #include "SDL2/SDL.h"
+#include "Camera.h"
+#include <iostream>
 
 bool running = true;
 

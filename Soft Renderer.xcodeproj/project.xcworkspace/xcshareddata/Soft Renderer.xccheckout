@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D64E5F3C-41D8-44EF-9A9B-56735F94E446</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Soft Renderer</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>B27C4733-1CBD-4928-89D5-D6559D854091</key>
+		<string>https://github.com/Alekssasho/Soft-Renderer.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Soft Renderer.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>B27C4733-1CBD-4928-89D5-D6559D854091</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Alekssasho/Soft-Renderer.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>B27C4733-1CBD-4928-89D5-D6559D854091</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B27C4733-1CBD-4928-89D5-D6559D854091</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Soft-Renderer</string>
+		</dict>
+	</array>
+</dict>
+</plist>
