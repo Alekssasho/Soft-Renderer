@@ -5,6 +5,8 @@
 #include "mesh.h"
 #include "glm/ext.hpp"
 
+#include "color.h"
+
 bool running = true;
 
 SDL_Texture *p_framebuffer;
@@ -68,7 +70,7 @@ int main()
 
     while(running) {
         event_handle();
-        device.clear(glm::vec4(0, 0, 0, 255));
+        device.clear(SoftEngine::Color::Black);
         mesh.setRotation(glm::vec3(mesh.rotation().x + 0.01f, mesh.rotation().y + 0.01f, mesh.rotation().z));
         device.render(camera, meshes);
         render(device);

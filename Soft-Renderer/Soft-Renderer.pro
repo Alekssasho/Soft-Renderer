@@ -11,10 +11,12 @@ INCLUDEPATH += /usr/local/include
 SOURCES += main.cpp \
     camera.cpp \
     mesh.cpp \
-    device.cpp
+    device.cpp \
+    color.cpp
 
 HEADERS += \
     camera.h \
     mesh.h \
-    device.h
+    device.h \
+    color.h
 
