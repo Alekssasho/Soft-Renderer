@@ -38,7 +38,7 @@ void render(const SoftEngine::Device& device)
     SDL_RenderPresent(p_renderer);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     SDL_Window *p_window;
 
