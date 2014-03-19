@@ -7,6 +7,9 @@
 
 #include "color.h"
 
+#define WIDTH 640
+#define HEIGHT 400
+
 bool running = true;
 
 SDL_Texture *p_framebuffer;
@@ -28,7 +31,7 @@ void event_handle()
 
 void render(const SoftEngine::Device& device)
 {
-    SDL_UpdateTexture(p_framebuffer, NULL, device.backBuffer(), 640 * sizeof(Uint8) * 4);
+    SDL_UpdateTexture(p_framebuffer, NULL, device.backBuffer(), WIDTH * sizeof(Uint32));
 
     SDL_RenderClear(p_renderer);
     SDL_RenderCopy(p_renderer, p_framebuffer, NULL, NULL);
@@ -41,13 +44,13 @@ int main()
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    p_window = SDL_CreateWindow("Soft Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
+    p_window = SDL_CreateWindow("Soft Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
 
     p_renderer = SDL_CreateRenderer(p_window, -1, 0);
 
     SDL_SetRenderDrawColor(p_renderer, 255, 0, 0, 255);
 
-    p_framebuffer = SDL_CreateTexture(p_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 640, 480);
+    p_framebuffer = SDL_CreateTexture(p_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
 
     SoftEngine::Mesh mesh("Cube", 8);
     mesh.vertices()[0] = glm::vec3(-1, 1, 1);
@@ -63,15 +66,21 @@ int main()
     camera.setPosition(glm::vec3(0.0f, 0.0f, 10.0f));
     camera.setTarget(glm::vec3(0.0f));
 
-    SoftEngine::Device device(640, 480);
+    SoftEngine::Device device(WIDTH, HEIGHT);
 
-    std::vector<SoftEngine::Mesh> meshes;
-    meshes.push_back(mesh);
+    std::vector<SoftEngine::Mesh*> meshes;
+    meshes.push_back(&mesh);
 
+    Uint32 lastTime = SDL_GetTicks();
+    Uint32 currentTime = lastTime;
     while(running) {
+        currentTime = SDL_GetTicks();
+        std::cout << "Last Frame took " << currentTime - lastTime << " milliseconds" << std::endl;
+        lastTime = currentTime;
+
         event_handle();
         device.clear(SoftEngine::Color::Black);
-        mesh.setRotation(glm::vec3(mesh.rotation().x + 0.01f, mesh.rotation().y + 0.01f, mesh.rotation().z));
+        mesh.setRotation(glm::vec3(mesh.rotation().x + 0.01f, mesh.rotation().y + 0.01f, mesh.rotation().z));       
         device.render(camera, meshes);
         render(device);
     }

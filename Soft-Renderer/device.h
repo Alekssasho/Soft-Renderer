@@ -25,10 +25,10 @@ public:
 
     void clear(const Color color);
     Color* backBuffer() const { return m_back_buffer; }
-    void putPixel(glm::vec2 point, const Color color);
-    glm::vec2 project(glm::vec3 coord, glm::mat4 transformationMatrix, glm::mat4 proj);
-    void drawPoint(glm::vec2 point);
-    void render(const SoftEngine::Camera& camera, std::vector<Mesh>& meshes);
+    void putPixel(glm::ivec2 point, const Color color);
+    glm::ivec2 project(glm::vec3 coord, glm::mat4 MVP);
+    void drawPoint(glm::ivec2 point);
+    void render(const SoftEngine::Camera& camera, std::vector<Mesh*>& meshes);
 
 };
 }//end of namespace

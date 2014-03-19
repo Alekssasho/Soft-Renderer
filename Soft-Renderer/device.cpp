@@ -7,6 +7,46 @@
 #include <iostream>
 #include <stdio.h>
 
+static glm::mat4 lookAtLH(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
+{
+    glm::vec3 xaxis, yaxis, zaxis;
+    zaxis = glm::normalize(target - eye);
+    xaxis = glm::normalize(glm::cross(up, zaxis));
+    yaxis = glm::cross(zaxis, xaxis);
+
+    glm::mat4 result(1.0f);
+    result[0][0] = xaxis.x;
+    result[1][0] = xaxis.y;
+    result[2][0] = xaxis.z;
+    result[0][1] = yaxis.x;
+    result[1][1] = yaxis.y;
+    result[2][1] = yaxis.z;
+    result[0][2] = zaxis.x;
+    result[1][2] = zaxis.y;
+    result[2][2] = zaxis.z;
+
+    result[3][0] = -glm::dot(xaxis, eye);
+    result[3][1] = -glm::dot(yaxis, eye);
+    result[3][2] = -glm::dot(zaxis, eye);
+
+    return result;
+}
+
+static glm::mat4 perspectiveFovLH(float fovy, float aspect, float znear, float zfar)
+{
+    float h = glm::cot(fovy * 0.5f);
+    float w = h / aspect;
+
+    glm::mat4 result(0.0f);
+    result[0][0] = w;
+    result[1][1] = h;
+    result[2][2] = zfar / (zfar - znear);
+    result[2][3] = 1.0f;
+    result[3][2] = -znear * zfar / (zfar - znear);
+
+    return result;
+}
+
 namespace SoftEngine
 {
 
@@ -26,50 +66,42 @@ void Device::clear(const Color color)
     }
 }
 
-void Device::putPixel(glm::vec2 point, const Color color)
+void Device::putPixel(glm::ivec2 point, const Color color)
 {
     int index = (point.x + point.y * m_width);
     m_back_buffer[index] = color;
 }
 
-glm::vec2 Device::project(glm::vec3 coord, glm::mat4 transformationMatrix, glm::mat4 proj)
-{
-
-//     std::cout << glm::to_string(glm::vec4(coord, 1.0f)) << std::endl;
-//    auto point = glm::vec4(coord, 1.0f) * transformationMatrix;
-
-//    float x = point.x * m_width + m_width / 2.0f;
-//    float y = -point.y * m_height + m_height / 2.0f;
-//    std::cout << x << "    " << y << std::endl;
-//    return glm::vec2(x, y);
-
-    auto point = glm::project(coord, transformationMatrix, proj, glm::vec4(0, 0, m_width, m_height));
-//    std::cout << glm::to_string(point) << std::endl;
-    return glm::vec2(point);
-}
-
-void Device::drawPoint(glm::vec2 point)
+void Device::drawPoint(glm::ivec2 point)
 {
     if(point.x >= 0 && point.y >= 0 && point.x < m_width && point.y < m_height) {
-        this->putPixel(point, Color::Red);
+        this->putPixel(point, Color(255, 255, 0, 255));
     }
 }
 
-void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
+glm::ivec2 Device::project(glm::vec3 coord, glm::mat4 MVP)
 {
-    auto viewMatrix = glm::lookAt(camera.position(), camera.target(), glm::vec3(0.0f, 1.0f, 0.0f));
-    auto projectionMatrix = glm::perspective(0.78f, static_cast<float>(m_width) / m_height, 0.01f, 1.0f);
+    auto point = MVP * glm::vec4(coord, 1.0f);
+    point /= point.w;
 
-    for(Mesh& mesh : meshes) {
-//        auto worldMatrix = glm::translate(glm::mat4(1.0f), mesh.position()) *
-//                glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
-        auto worldMatrix = glm::translate(glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z), mesh.position());
+    float x = point.x * m_width + m_width / 2.0f;
+    float y = -point.y * m_height + m_height / 2.0f;
+    return glm::ivec2(x, y);
+}
 
-//        auto WVP = projectionMatrix * viewMatrix * worldMatrix;
-//        auto WVP = worldMatrix * viewMatrix * projectionMatrix;
+void Device::render(const Camera &camera, std::vector<Mesh*> &meshes)
+{
+    auto viewMatrix = lookAtLH(camera.position(), camera.target(), glm::vec3(0.0f, 1.0f, 0.0f));
+    auto projectionMatrix = perspectiveFovLH(0.78f, static_cast<float>(m_width) / m_height, 0.01f, 1.0f);
 
-        for(glm::vec3& vertex : mesh.vertices()) {
-            auto point = this->project(vertex, viewMatrix * worldMatrix, projectionMatrix);
+    for(Mesh* mesh : meshes) {
+        auto modelMatrix = glm::translate(glm::mat4(1.0f), mesh->position()) *
+                glm::yawPitchRoll(mesh->rotation().y, mesh->rotation().x, mesh->rotation().z);
+
+        auto MVP = projectionMatrix * viewMatrix * modelMatrix;
+
+        for(glm::vec3& vertex : mesh->vertices()) {
+            auto point = this->project(vertex, MVP);
             this->drawPoint(point);
         }
     }
