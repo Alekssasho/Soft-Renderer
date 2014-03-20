@@ -123,37 +123,12 @@ int main(int argc, char* argv[])
     p_framebuffer = SDL_CreateTexture(p_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
 
     std::vector<SoftEngine::Mesh> meshes;
-//    meshes.push_back(SoftEngine::Mesh("Cube", 8, 12));
-
-//    SoftEngine::Mesh& mesh = meshes[0];
-//    mesh.vertices()[0] = glm::vec3(-1, 1, 1);
-//    mesh.vertices()[1] = glm::vec3(1, 1, 1);
-//    mesh.vertices()[2] = glm::vec3(-1, -1, 1);
-//    mesh.vertices()[3] = glm::vec3(1, -1, 1);
-//    mesh.vertices()[4] = glm::vec3(-1, 1, -1);
-//    mesh.vertices()[5] = glm::vec3(1, 1, -1);
-//    mesh.vertices()[6] = glm::vec3(1, -1, -1);
-//    mesh.vertices()[7] = glm::vec3(-1, -1, -1);
-//    mesh.faces()[0] = SoftEngine::Face{ 0, 1, 2 };
-//    mesh.faces()[1] = SoftEngine::Face{ 1, 2, 3 };
-//    mesh.faces()[2] = SoftEngine::Face{ 1, 3, 6 };
-//    mesh.faces()[3] = SoftEngine::Face{ 1, 5, 6 };
-//    mesh.faces()[4] = SoftEngine::Face{ 0, 1, 4 };
-//    mesh.faces()[5] = SoftEngine::Face{ 1, 4, 5 };
-//    mesh.faces()[6] = SoftEngine::Face{ 2, 3, 7 };
-//    mesh.faces()[7] = SoftEngine::Face{ 3, 6, 7 };
-//    mesh.faces()[8] = SoftEngine::Face{ 0, 2, 7 };
-//    mesh.faces()[9] = SoftEngine::Face{ 0, 4, 7 };
-//    mesh.faces()[10] = SoftEngine::Face{ 4, 5, 6 };
-//    mesh.faces()[11] = SoftEngine::Face{ 4, 6, 7 };
+    SoftEngine::Device device(WIDTH, HEIGHT);
+    device.loadJSONFile("../monkey.babylon", meshes);
 
     SoftEngine::Camera camera;
     camera.setPosition(glm::vec3(0.0f, 0.0f, 10.0f));
     camera.setTarget(glm::vec3(0.0f));
-
-    SoftEngine::Device device(WIDTH, HEIGHT);
-
-    device.loadJSONFile("../monkey.babylon", meshes);
 
     LTimer fpsTimer, capTimer;
     int countedFrames = 0;
