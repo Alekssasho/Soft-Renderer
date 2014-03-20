@@ -49,12 +49,14 @@ SOURCES       = ../Soft-Renderer/main.cpp \
 		../Soft-Renderer/camera.cpp \
 		../Soft-Renderer/mesh.cpp \
 		../Soft-Renderer/device.cpp \
-		../Soft-Renderer/color.cpp 
+		../Soft-Renderer/color.cpp \
+		../Soft-Renderer/json/json.cpp 
 OBJECTS       = main.o \
 		camera.o \
 		mesh.o \
 		device.o \
-		color.o
+		color.o \
+		json.o
 DIST          = ../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/qdevice.pri \
 		../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/features/device_config.prf \
@@ -580,145 +582,7 @@ main.o: ../Soft-Renderer/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.inl \
 		../Soft-Renderer/camera.h \
 		../Soft-Renderer/mesh.h \
-		../Soft-Renderer/color.h \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/ext.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/constants.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/constants.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/epsilon.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/epsilon.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/quaternion.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/quaternion.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_access.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_access.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_integer.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_inverse.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_inverse.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_transform.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/matrix_transform.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/noise.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/noise.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_noise.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/packing.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/type_precision.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/type_precision.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/packing.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/random.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/random.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/reciprocal.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/reciprocal.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/type_ptr.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/type_ptr.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/ulp.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtc/ulp.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/associated_min_max.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/associated_min_max.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/bit.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/bit.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/closest_point.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/closest_point.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/color_space.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/color_space.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/color_space_YCoCg.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/color_space_YCoCg.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/compatibility.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/compatibility.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/component_wise.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/component_wise.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/dual_quaternion.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/dual_quaternion.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/euler_angles.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/euler_angles.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/extend.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/extend.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/extented_min_max.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/extented_min_max.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_exponential.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_exponential.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_square_root.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_square_root.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_trigonometry.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/fast_trigonometry.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/gradient_paint.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/optimum_pow.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/optimum_pow.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/gradient_paint.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/handed_coordinate_space.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/handed_coordinate_space.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/inertia.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/inertia.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/int_10_10_10_2.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/raw_data.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/raw_data.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/int_10_10_10_2.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/integer.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/integer.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/intersect.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/intersect.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/log_base.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/log_base.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_cross_product.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_cross_product.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_interpolation.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_interpolation.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_major_storage.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_major_storage.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_operation.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_operation.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_query.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vector_query.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vector_query.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/matrix_query.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/mixed_product.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/mixed_product.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/multiple.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/multiple.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/norm.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/quaternion.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/norm.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/normal.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/normal.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/normalize_dot.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/normalize_dot.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/number_precision.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/number_precision.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/orthonormalize.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/orthonormalize.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/perpendicular.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/projection.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/projection.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/perpendicular.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/polar_coordinates.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/polar_coordinates.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/rotate_vector.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/transform.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/transform.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/rotate_vector.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/spline.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/spline.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/std_based_type.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/std_based_type.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/string_cast.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/string_cast.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/transform2.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/transform2.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vec1.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vec1.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vector_angle.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/vector_angle.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/wrap.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/wrap.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_vec4.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_common.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_common.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_geometric.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_geometric.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_integer.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_integer.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_vec4.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_mat4.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_matrix.hpp \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_matrix.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_mat4.inl
+		../Soft-Renderer/color.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Soft-Renderer/main.cpp
 
 camera.o: ../Soft-Renderer/camera.cpp ../Soft-Renderer/camera.h \
@@ -1187,6 +1051,9 @@ color.o: ../Soft-Renderer/color.cpp ../Soft-Renderer/color.h \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.hpp \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o color.o ../Soft-Renderer/color.cpp
+
+json.o: ../Soft-Renderer/json/json.cpp ../Soft-Renderer/json/json.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json.o ../Soft-Renderer/json/json.cpp
 
 ####### Install
 

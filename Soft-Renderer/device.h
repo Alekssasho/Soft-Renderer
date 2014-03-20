@@ -23,13 +23,21 @@ public:
     Device(const Device& other) = delete;
     Device& operator=(const Device& other) = delete;
 
-    void clear(const Color color);
-    Color* backBuffer() const { return m_back_buffer; }
-    void putPixel(glm::ivec2 point, const Color color);
-    glm::ivec2 project(glm::vec3 coord, glm::mat4 MVP);
-    void drawPoint(glm::ivec2 point);
-    void render(const SoftEngine::Camera& camera, std::vector<Mesh*>& meshes);
+    void loadJSONFile(std::string filename, std::vector<Mesh>& meshes);
 
+    void clear(const Color color);
+
+    Color* backBuffer() const { return m_back_buffer; }
+
+    void putPixel(glm::ivec2 point, const Color color);
+
+    glm::ivec2 project(glm::vec3 coord, glm::mat4 MVP);
+
+    void drawPoint(glm::ivec2 point);
+    void drawLine(glm::ivec2 start, glm::ivec2 end);
+    void drawBLine(glm::ivec2 start, glm::ivec2 end);
+
+    void render(const SoftEngine::Camera& camera, std::vector<Mesh>& meshes);
 };
 }//end of namespace
 

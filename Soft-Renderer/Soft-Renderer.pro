@@ -20,11 +20,13 @@ SOURCES += main.cpp \
     camera.cpp \
     mesh.cpp \
     device.cpp \
-    color.cpp
+    color.cpp \
+    json/json.cpp
 
 HEADERS += \
     camera.h \
     mesh.h \
     device.h \
-    color.h
+    color.h \
+    json/json.h
 
