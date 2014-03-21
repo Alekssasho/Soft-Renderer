@@ -5,8 +5,8 @@
 #include "mesh.h"
 #include "color.h"
 
-const int WIDTH = 640;
-const int HEIGHT = 400;
+const int WIDTH = 800;
+const int HEIGHT = 500;
 const int FPS = 30;
 const int SECONDS_PER_FRAME = 1000 / FPS;
 

@@ -49,6 +49,11 @@ static glm::mat4 perspectiveFovLH(float fovy, float aspect, float znear, float z
     return result;
 }
 
+static float lerp(float min, float max, float gradient)
+{
+    return min + (max - min) * glm::clamp<float>(gradient, 0, 1);
+}
+
 namespace SoftEngine
 {
 
@@ -74,27 +79,27 @@ void Device::putPixel(glm::ivec2 point, const Color color)
     m_back_buffer[index] = color;
 }
 
-void Device::drawPoint(glm::ivec2 point)
+void Device::drawPoint(glm::ivec2 point, Color color)
 {
     if(point.x >= 0 && point.y >= 0 && point.x < m_width && point.y < m_height) {
-        this->putPixel(point, Color(255, 255, 0, 255));
+        this->putPixel(point, color);
     }
 }
 
-void Device::drawLine(glm::ivec2 start, glm::ivec2 end)
+void Device::drawLine(glm::ivec2 start, glm::ivec2 end, Color color)
 {
     auto dist = glm::length(glm::vec2(end) - glm::vec2(start));
 
     if(dist < 2 )
         return;
     auto middle = start + (end - start) / 2;
-    this->drawPoint(middle);
+    this->drawPoint(middle, color);
 
-    this->drawLine(start, middle);
-    this->drawLine(middle, end);
+    this->drawLine(start, middle, color);
+    this->drawLine(middle, end, color);
 }
 
-void Device::drawBLine(glm::ivec2 start, glm::ivec2 end)
+void Device::drawBLine(glm::ivec2 start, glm::ivec2 end, Color color)
 {
     int x0 = start.x;
     int y0 = start.y;
@@ -107,7 +112,7 @@ void Device::drawBLine(glm::ivec2 start, glm::ivec2 end)
     auto sy = (y0 < y1) ? 1 : -1;
     auto err = dx - dy;
     while(true) {
-        this->drawPoint(glm::ivec2(x0, y0));
+        this->drawPoint(glm::ivec2(x0, y0), color);
         if((x0 == x1) && (y0 == y1))
             break;
         auto e2 = 2 * err;
@@ -118,6 +123,96 @@ void Device::drawBLine(glm::ivec2 start, glm::ivec2 end)
         if(e2 < dx) {
             err += dx;
             y0 += sy;
+        }
+    }
+}
+
+void Device::fillTopTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
+{
+    float invslope1 = v3.y == v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
+    float invslope2 = v3.y == v2.y ? (v3.x - v2.x) / (v3.y - v2.y) : 1;
+
+    float curx1 = v3.x;
+    float curx2 = v3.x;
+
+    for(int y = v3.y; y > v1.y; --y) {
+        curx1 -= invslope1;
+        curx2 -= invslope2;
+        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
+    }
+}
+
+void Device::fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
+{
+    float invslope1 = v2.y != v1.y ? (v2.x - v1.x) / (v2.y - v1.y) : 1;
+    float invslope2 = v3.y != v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
+
+    float curx1 = v1.x;
+    float curx2 = v1.x;
+
+    for(int y = v1.y; y <= v2.y; ++y) {
+        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
+        curx1 += invslope1;
+        curx2 += invslope2;
+    }
+}
+
+void Device::proccessScanLine(int y, glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, glm::ivec2 v4, Color color)
+{
+    auto gradient1 = v1.y != v2.y ? (y - v1.y) / (v2.y - v1.y) : 1;
+    auto gradient2 = v3.y != v4.y ? (y - v3.y) / (v4.y - v3.y) : 1;
+
+    int sx = static_cast<int>(lerp(v1.x, v2.x, gradient1));
+    int ex = static_cast<int>(lerp(v3.x, v4.x, gradient2));
+
+//    for(int x = sx; x < ex; ++x) {
+//        this->drawPoint(glm::ivec2(x, y), color);
+//    }
+    this->drawBLine(glm::ivec2(sx, y), glm::ivec2(ex, y), color);
+}
+
+void Device::drawTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
+{
+    if(v1.y > v2.y) std::swap(v1, v2);
+    if(v2.y > v3.y) std::swap(v2, v3);
+    if(v1.y > v2.y) std::swap(v1, v2);
+
+//    if(v2.y == v3.y)
+//        this->fillBottomTriangle(v1, v2, v3, color);
+//    else if(v1.y == v2.y)
+//        this->fillTopTriangle(v1, v2, v3, color);
+//    else {
+//        int x = v3.x != v1.x ? (v1.x + (v2.y - v1.y)) / ((v3.y - v1.y) * (v3.x - v1.x)) : v3.x;
+
+//        glm::ivec2 v4( x, v2.y);
+//        this->fillBottomTriangle(v1, v2, v4, color);
+//        this->fillTopTriangle(v2, v4, v3, color);
+//    }
+
+    float dV1V2;
+    float dV1V3;
+    if(v2.y - v1.y > 0)
+        dV1V2 = (v2.x - v1.x) / (v2.y - v1.y);
+    else
+        dV1V2 = 0;
+    if(v3.y - v1.y > 0)
+        dV1V3 = (v3.x - v1.x) / (v3.y - v1.y);
+    else
+        dV1V3 = 0;
+
+    if(dV1V2 > dV1V3) {
+        for(int y = v1.y; y <= v3.y; ++y) {
+            if(y < v2.y)
+                this->proccessScanLine(y, v1, v3, v1, v2, color);
+            else
+                this->proccessScanLine(y, v1, v3, v2, v3, color);
+        }
+    } else {
+        for(int y = v1.y; y <= v3.y; ++y) {
+            if(y < v2.y)
+                this->proccessScanLine(y, v1, v2, v1, v3, color);
+            else
+                this->proccessScanLine(y, v2, v3, v1, v3, color);
         }
     }
 }
@@ -143,13 +238,14 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 
         auto MVP = projectionMatrix * viewMatrix * modelMatrix;
 
+        int faceIndex = 0;
         for(Face& face : mesh.faces()) {
             auto pointA = this->project(mesh.vertices()[face.A], MVP);
             auto pointB = this->project(mesh.vertices()[face.B], MVP);
             auto pointC = this->project(mesh.vertices()[face.C], MVP);
-            this->drawBLine(pointA, pointB);
-            this->drawBLine(pointB, pointC);
-            this->drawBLine(pointC, pointA);
+            auto color = (0.25f + (faceIndex % mesh.faces().size()) * 0.75f / mesh.faces().size()) * 255;
+            this->drawTriangle(pointA, pointB, pointC, Color(color, color, color, 255));
+            ++faceIndex;
         }
     }
 }
