@@ -92,6 +92,9 @@ void event_handle()
                 if ( event.key.keysym.sym == SDLK_ESCAPE )
                     running = false;
                 break;
+        case SDL_QUIT:
+            running = false;
+            break;
         }
     }
 }
@@ -127,7 +130,7 @@ int main(int argc, char* argv[])
     device.loadJSONFile("../monkey.babylon", meshes);
 
     SoftEngine::Camera camera;
-    camera.setPosition(glm::vec3(0.0f, 0.0f, 10.0f));
+    camera.setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
     camera.setTarget(glm::vec3(0.0f));
 
     LTimer fpsTimer, capTimer;
@@ -154,7 +157,7 @@ int main(int argc, char* argv[])
         device.clear(SoftEngine::Color::Black);
 
         for(SoftEngine::Mesh& mesh : meshes)
-            mesh.setRotation(glm::vec3(mesh.rotation().x + 0.01f, mesh.rotation().y + 0.01f, mesh.rotation().z));
+            mesh.setRotation(glm::vec3(mesh.rotation().x/* + 0.01f*/, mesh.rotation().y + 0.01f, mesh.rotation().z));
 
         device.render(camera, meshes);
         render(device);

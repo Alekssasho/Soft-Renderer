@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <climits>
 
 static glm::mat4 lookAtLH(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
 {
@@ -51,55 +52,60 @@ static glm::mat4 perspectiveFovLH(float fovy, float aspect, float znear, float z
 
 static float lerp(float min, float max, float gradient)
 {
-    return min + (max - min) * glm::clamp<float>(gradient, 0, 1);
+    return min + (max - min) * glm::clamp<float>(gradient, 0.0f, 1.0f);
 }
 
 namespace SoftEngine
 {
 
 Device::Device(int width, int height)
-    : m_width(width), m_height(height), m_back_buffer(new Color[width * height])
+    : m_width(width), m_height(height), m_back_buffer(new Color[width * height]), m_depthBuffer(new float[width * height])
 {}
 
 Device::~Device()
 {
     delete [] m_back_buffer;
+    delete [] m_depthBuffer;
 }
 
 void Device::clear(const Color color)
 {
     for(int i = 0; i < m_width * m_height; ++i) {
         m_back_buffer[i] = color;
+        m_depthBuffer[i] = std::numeric_limits<float>::max();
     }
 }
 
-void Device::putPixel(glm::ivec2 point, const Color color)
+void Device::putPixel(int x, int y, float z, const Color color)
 {
-    int index = (point.x + point.y * m_width);
+    int index = (x + y * m_width);
+    if(m_depthBuffer[index] < z)
+        return;
+    m_depthBuffer[index] = z;
     m_back_buffer[index] = color;
 }
 
-void Device::drawPoint(glm::ivec2 point, Color color)
+void Device::drawPoint(glm::vec3 point, Color color)
 {
     if(point.x >= 0 && point.y >= 0 && point.x < m_width && point.y < m_height) {
-        this->putPixel(point, color);
+        this->putPixel(static_cast<int>(point.x), static_cast<int>(point.y), point.z, color);
     }
 }
 
-void Device::drawLine(glm::ivec2 start, glm::ivec2 end, Color color)
+void Device::drawLine(glm::vec3 start, glm::vec3 end, Color color)
 {
-    auto dist = glm::length(glm::vec2(end) - glm::vec2(start));
+    auto dist = glm::length(end - start);
 
     if(dist < 2 )
         return;
-    auto middle = start + (end - start) / 2;
+    auto middle = start + (end - start) / 2.0f;
     this->drawPoint(middle, color);
 
     this->drawLine(start, middle, color);
     this->drawLine(middle, end, color);
 }
 
-void Device::drawBLine(glm::ivec2 start, glm::ivec2 end, Color color)
+void Device::drawBLine(glm::vec3 start, glm::vec3 end, Color color)
 {
     int x0 = start.x;
     int y0 = start.y;
@@ -112,7 +118,7 @@ void Device::drawBLine(glm::ivec2 start, glm::ivec2 end, Color color)
     auto sy = (y0 < y1) ? 1 : -1;
     auto err = dx - dy;
     while(true) {
-        this->drawPoint(glm::ivec2(x0, y0), color);
+        this->drawPoint(glm::vec3(x0, y0, start.z), color);
         if((x0 == x1) && (y0 == y1))
             break;
         auto e2 = 2 * err;
@@ -127,37 +133,37 @@ void Device::drawBLine(glm::ivec2 start, glm::ivec2 end, Color color)
     }
 }
 
-void Device::fillTopTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
-{
-    float invslope1 = v3.y == v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
-    float invslope2 = v3.y == v2.y ? (v3.x - v2.x) / (v3.y - v2.y) : 1;
+//void Device::fillTopTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color)
+//{
+//    float invslope1 = v3.y == v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
+//    float invslope2 = v3.y == v2.y ? (v3.x - v2.x) / (v3.y - v2.y) : 1;
 
-    float curx1 = v3.x;
-    float curx2 = v3.x;
+//    float curx1 = v3.x;
+//    float curx2 = v3.x;
 
-    for(int y = v3.y; y > v1.y; --y) {
-        curx1 -= invslope1;
-        curx2 -= invslope2;
-        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
-    }
-}
+//    for(int y = v3.y; y > v1.y; --y) {
+//        curx1 -= invslope1;
+//        curx2 -= invslope2;
+//        this->drawBLine(glm::vec3(curx1, y, v1.z), glm::vec3(curx2, y, v1.z), color);
+//    }
+//}
 
-void Device::fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
-{
-    float invslope1 = v2.y != v1.y ? (v2.x - v1.x) / (v2.y - v1.y) : 1;
-    float invslope2 = v3.y != v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
+//void Device::fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
+//{
+//    float invslope1 = v2.y != v1.y ? (v2.x - v1.x) / (v2.y - v1.y) : 1;
+//    float invslope2 = v3.y != v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
 
-    float curx1 = v1.x;
-    float curx2 = v1.x;
+//    float curx1 = v1.x;
+//    float curx2 = v1.x;
 
-    for(int y = v1.y; y <= v2.y; ++y) {
-        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
-        curx1 += invslope1;
-        curx2 += invslope2;
-    }
-}
+//    for(int y = v1.y; y <= v2.y; ++y) {
+//        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
+//        curx1 += invslope1;
+//        curx2 += invslope2;
+//    }
+//}
 
-void Device::proccessScanLine(int y, glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, glm::ivec2 v4, Color color)
+void Device::proccessScanLine(int y, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, Color color)
 {
     auto gradient1 = v1.y != v2.y ? (y - v1.y) / (v2.y - v1.y) : 1;
     auto gradient2 = v3.y != v4.y ? (y - v3.y) / (v4.y - v3.y) : 1;
@@ -165,13 +171,16 @@ void Device::proccessScanLine(int y, glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3
     int sx = static_cast<int>(lerp(v1.x, v2.x, gradient1));
     int ex = static_cast<int>(lerp(v3.x, v4.x, gradient2));
 
-//    for(int x = sx; x < ex; ++x) {
-//        this->drawPoint(glm::ivec2(x, y), color);
-//    }
-    this->drawBLine(glm::ivec2(sx, y), glm::ivec2(ex, y), color);
+    float z1 = lerp(v1.z, v2.z, gradient1);
+    float z2 = lerp(v3.z, v4.z, gradient2);
+
+    for(int x = sx; x < ex; ++x) {
+        float gradient = (x - sx) / static_cast<float>(ex - sx);
+        this->drawPoint(glm::vec3(x, y, lerp(z1, z2, gradient)), color);
+    }
 }
 
-void Device::drawTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
+void Device::drawTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color)
 {
     if(v1.y > v2.y) std::swap(v1, v2);
     if(v2.y > v3.y) std::swap(v2, v3);
@@ -217,14 +226,14 @@ void Device::drawTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color col
     }
 }
 
-glm::ivec2 Device::project(glm::vec3 coord, glm::mat4 MVP)
+glm::vec3 Device::project(glm::vec3 coord, glm::mat4 MVP)
 {
     auto point = MVP * glm::vec4(coord, 1.0f);
     point /= point.w;
 
     float x = point.x * m_width + m_width / 2.0f;
     float y = -point.y * m_height + m_height / 2.0f;
-    return glm::ivec2(x, y);
+    return glm::vec3(x, y, point.z);
 }
 
 void Device::render(const Camera &camera, std::vector<Mesh> &meshes)

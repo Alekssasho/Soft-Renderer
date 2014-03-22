@@ -17,17 +17,18 @@ private:
     int m_width;
     int m_height;
     Color *m_back_buffer;
+    float *m_depthBuffer;
 
-    void putPixel(glm::ivec2 point, const Color color);
-    glm::ivec2 project(glm::vec3 coord, glm::mat4 MVP);
-    void fillTopTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
-    void fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
-    void proccessScanLine(int y, glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, glm::ivec2 v4, Color color);
+    void putPixel(int x, int y, float z, const Color color);
+    glm::vec3 project(glm::vec3 coord, glm::mat4 MVP);
+//    void fillTopTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
+//    void fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
+    void proccessScanLine(int y, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, Color color);
 
-    void drawPoint(glm::ivec2 point, Color color);
-    void drawLine(glm::ivec2 start, glm::ivec2 end, Color color);
-    void drawBLine(glm::ivec2 start, glm::ivec2 end, Color color);
-    void drawTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
+    void drawPoint(glm::vec3 point, Color color);
+    void drawLine(glm::vec3 start, glm::vec3 end, Color color);
+    void drawBLine(glm::vec3 start, glm::vec3 end, Color color);
+    void drawTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color);
 public:
     Device(int width, int height);
     ~Device();
