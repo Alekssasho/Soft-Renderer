@@ -79,6 +79,8 @@ void Device::clear(const Color color)
 void Device::putPixel(int x, int y, float z, const Color color)
 {
     int index = (x + y * m_width);
+
+
     if(m_depthBuffer[index] < z)
         return;
     m_depthBuffer[index] = z;
@@ -236,27 +238,135 @@ glm::vec3 Device::project(glm::vec3 coord, glm::mat4 MVP)
     return glm::vec3(x, y, point.z);
 }
 
+#define PARALLEL
+
 void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 {
     auto viewMatrix = lookAtLH(camera.position(), camera.target(), glm::vec3(0.0f, 1.0f, 0.0f));
     auto projectionMatrix = perspectiveFovLH(0.78f, static_cast<float>(m_width) / m_height, 0.01f, 1.0f);
+
+#ifdef PARALLEL
+    std::vector<glm::vec3> quadrant1;
+    std::vector<glm::vec3> quadrant2;
+    std::vector<glm::vec3> quadrant3;
+    std::vector<glm::vec3> quadrant4;
+    std::vector<glm::vec3> quadrantCommon;
+#endif
 
     for(Mesh& mesh : meshes) {
         auto modelMatrix = glm::translate(glm::mat4(1.0f), mesh.position()) *
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
 
         auto MVP = projectionMatrix * viewMatrix * modelMatrix;
-
+#ifndef PARALLEL
         int faceIndex = 0;
+#endif
+
         for(Face& face : mesh.faces()) {
             auto pointA = this->project(mesh.vertices()[face.A], MVP);
             auto pointB = this->project(mesh.vertices()[face.B], MVP);
             auto pointC = this->project(mesh.vertices()[face.C], MVP);
+#ifdef PARALLEL
+            if(pointA.x >= 0 && pointA.x < m_width / 2 && pointA.y >= 0 && pointA.y < m_height / 2) {
+                if(pointB.x >= 0 && pointB.x < m_width / 2 && pointB.y >= 0 && pointB.y < m_height / 2) {
+                    if(pointC.x >= 0 && pointC.x < m_width / 2 && pointC.y >= 0 && pointC.y < m_height / 2) {
+                        quadrant2.push_back(pointA);
+                        quadrant2.push_back(pointB);
+                        quadrant2.push_back(pointC);
+                        continue;
+                    }
+                }
+                quadrantCommon.push_back(pointA);
+                quadrantCommon.push_back(pointB);
+                quadrantCommon.push_back(pointC);
+            } else if(pointA.x >= m_width / 2 && pointA.x < m_width && pointA.y >= 0 && pointA.y < m_height / 2) {
+                if(pointB.x >= m_width / 2 && pointB.x < m_width && pointB.y >= 0 && pointB.y < m_height / 2) {
+                    if(pointC.x >= m_width / 2 && pointC.x < m_width && pointC.y >= 0 && pointC.y < m_height / 2) {
+                        quadrant1.push_back(pointA);
+                        quadrant1.push_back(pointB);
+                        quadrant1.push_back(pointC);
+                        continue;
+                    }
+                }
+                quadrantCommon.push_back(pointA);
+                quadrantCommon.push_back(pointB);
+                quadrantCommon.push_back(pointC);
+            } else if(pointA.x >= m_width / 2 && pointA.x < m_width && pointA.y >= m_height / 2 && pointA.y < m_height) {
+                if(pointB.x >= m_width / 2 && pointB.x < m_width && pointB.y >= m_height / 2 && pointB.y < m_height) {
+                    if(pointC.x >= m_width / 2 && pointC.x < m_width && pointC.y >= m_height / 2 && pointC.y < m_height) {
+                        quadrant4.push_back(pointA);
+                        quadrant4.push_back(pointB);
+                        quadrant4.push_back(pointC);
+                        continue;
+                    }
+                }
+                quadrantCommon.push_back(pointA);
+                quadrantCommon.push_back(pointB);
+                quadrantCommon.push_back(pointC);
+            } else {
+                quadrant3.push_back(pointA);
+                quadrant3.push_back(pointB);
+                quadrant3.push_back(pointC);
+            }
+
+#else
             auto color = (0.25f + (faceIndex % mesh.faces().size()) * 0.75f / mesh.faces().size()) * 255;
             this->drawTriangle(pointA, pointB, pointC, Color(color, color, color, 255));
             ++faceIndex;
+#endif
+
         }
     }
+#ifdef PARALLEL
+//std::cerr << quadrant1.size() << "  " << quadrant2.size() << " " << quadrant3.size() << " " << quadrant4.size() << " " << quadrantCommon.size() << std::endl;
+#pragma omp parallel sections
+    {
+     #pragma omp section
+        {
+            int faceIndex = 0;
+            for(auto itr = std::begin(quadrant1); itr != std::end(quadrant1); itr += 3) {
+                auto color = (0.25f + (faceIndex % (quadrant1.size() / 3)) * 0.75f / (quadrant1.size() / 3)) * 255;
+                this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(color, color, color, 255));
+                ++faceIndex;
+            }
+        }
+    #pragma omp section
+       {
+           int faceIndex = 0;
+           for(auto itr = std::begin(quadrant2); itr != std::end(quadrant2); itr += 3) {
+               auto color = (0.25f + (faceIndex % (quadrant2.size() / 3)) * 0.75f / (quadrant2.size() / 3)) * 255;
+               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(color, color, color, 255));
+               ++faceIndex;
+           }
+       }
+    #pragma omp section
+       {
+           int faceIndex = 0;
+           for(auto itr = std::begin(quadrant3); itr != std::end(quadrant3); itr += 3) {
+               auto color = (0.25f + (faceIndex % (quadrant3.size() / 3)) * 0.75f / (quadrant3.size() / 3)) * 255;
+               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(color, color, color, 255));
+               ++faceIndex;
+           }
+       }
+    #pragma omp section
+       {
+           int faceIndex = 0;
+           for(auto itr = std::begin(quadrant4); itr != std::end(quadrant4); itr += 3) {
+               auto color = (0.25f + (faceIndex % (quadrant4.size() / 3)) * 0.75f / (quadrant4.size() / 3)) * 255;
+               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(color, color, color, 255));
+               ++faceIndex;
+           }
+       }
+    }
+
+    int faceIndex = 0;
+    for(auto itr = std::begin(quadrantCommon); itr != std::end(quadrantCommon); itr += 3) {
+        auto color = (0.25f + (faceIndex % (quadrantCommon.size() / 3)) * 0.75f / (quadrantCommon.size() / 3)) * 255;
+        this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(color, color, color, 255));
+        ++faceIndex;
+    }
+
+#endif
 }
 
 void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
@@ -298,7 +408,8 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
 
         auto position = mesh["position"].ToArray();
         currentMesh.setPosition(glm::vec3(position[0].ToFloat(), position[1].ToFloat(), position[2].ToFloat()));
-    }
+    }            
+
 }
 
 }//end of namespace

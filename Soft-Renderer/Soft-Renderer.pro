@@ -3,6 +3,8 @@ CONFIG -= console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS *= -fopenmp
 
 macx{
 LIBS += -L/usr/local/lib -lSDL2

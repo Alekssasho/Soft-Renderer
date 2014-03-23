@@ -5,12 +5,12 @@
 #include "mesh.h"
 #include "color.h"
 
-const int WIDTH = 800;
-const int HEIGHT = 500;
+const int WIDTH = 1280;
+const int HEIGHT = 800;
 const int FPS = 30;
 const int SECONDS_PER_FRAME = 1000 / FPS;
 
-//#define LOGGER
+#define LOGGER
 
 class LTimer
 {
@@ -103,7 +103,6 @@ void render(const SoftEngine::Device& device)
 {
     SDL_UpdateTexture(p_framebuffer, NULL, device.backBuffer(), WIDTH * sizeof(Uint32));
 
-    SDL_RenderClear(p_renderer);
     SDL_RenderCopy(p_renderer, p_framebuffer, NULL, NULL);
     SDL_RenderPresent(p_renderer);
 }
