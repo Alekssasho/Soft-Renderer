@@ -82,6 +82,8 @@ public:
     static const Color Black;
 };
 
+Color operator*(Color& color, float scalar);
+
 std::ostream& operator<<(std::ostream& out, const Color& color);
 
 }//end of namespace

@@ -137,40 +137,15 @@ void Device::drawBLine(glm::vec3 start, glm::vec3 end, Color color)
     }
 }
 
-//void Device::fillTopTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color)
-//{
-//    float invslope1 = v3.y == v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
-//    float invslope2 = v3.y == v2.y ? (v3.x - v2.x) / (v3.y - v2.y) : 1;
-
-//    float curx1 = v3.x;
-//    float curx2 = v3.x;
-
-//    for(int y = v3.y; y > v1.y; --y) {
-//        curx1 -= invslope1;
-//        curx2 -= invslope2;
-//        this->drawBLine(glm::vec3(curx1, y, v1.z), glm::vec3(curx2, y, v1.z), color);
-//    }
-//}
-
-//void Device::fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color)
-//{
-//    float invslope1 = v2.y != v1.y ? (v2.x - v1.x) / (v2.y - v1.y) : 1;
-//    float invslope2 = v3.y != v1.y ? (v3.x - v1.x) / (v3.y - v1.y) : 1;
-
-//    float curx1 = v1.x;
-//    float curx2 = v1.x;
-
-//    for(int y = v1.y; y <= v2.y; ++y) {
-//        this->drawBLine(glm::ivec2(curx1, y), glm::ivec2(curx2, y), color);
-//        curx1 += invslope1;
-//        curx2 += invslope2;
-//    }
-//}
-
-void Device::proccessScanLine(int y, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, Color color)
+void Device::proccessScanLine(ScanLineData data, Vertex& va, Vertex& vb, Vertex& vc, Vertex& vd, Color color)
 {
-    auto gradient1 = v1.y != v2.y ? (y - v1.y) / (v2.y - v1.y) : 1;
-    auto gradient2 = v3.y != v4.y ? (y - v3.y) / (v4.y - v3.y) : 1;
+    glm::vec3& v1 = va.coordinates;
+    glm::vec3& v2 = vb.coordinates;
+    glm::vec3& v3 = vc.coordinates;
+    glm::vec3& v4 = vd.coordinates;
+
+    auto gradient1 = v1.y != v2.y ? (data.currentY - v1.y) / (v2.y - v1.y) : 1;
+    auto gradient2 = v3.y != v4.y ? (data.currentY - v3.y) / (v4.y - v3.y) : 1;
 
     int sx = static_cast<int>(lerp(v1.x, v2.x, gradient1));
     int ex = static_cast<int>(lerp(v3.x, v4.x, gradient2));
@@ -180,27 +155,37 @@ void Device::proccessScanLine(int y, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, g
 
     for(int x = sx; x < ex; ++x) {
         float gradient = (x - sx) / static_cast<float>(ex - sx);
-        this->drawPoint(glm::vec3(x, y, lerp(z1, z2, gradient)), color);
+        auto ndotl = data.ndotla;
+        this->drawPoint(glm::vec3(x, data.currentY, lerp(z1, z2, gradient)), color * ndotl);
     }
 }
 
-void Device::drawTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color)
+float computeNDotL(glm::vec3 vertex, glm::vec3 normal, glm::vec3 light)
 {
-    if(v1.y > v2.y) std::swap(v1, v2);
-    if(v2.y > v3.y) std::swap(v2, v3);
-    if(v1.y > v2.y) std::swap(v1, v2);
+    auto lightDirection = light - vertex;
+    glm::normalize(normal);
+    glm::normalize(lightDirection);
+    return glm::max(0.0f, glm::dot<float>(normal, lightDirection));
+}
 
-//    if(v2.y == v3.y)
-//        this->fillBottomTriangle(v1, v2, v3, color);
-//    else if(v1.y == v2.y)
-//        this->fillTopTriangle(v1, v2, v3, color);
-//    else {
-//        int x = v3.x != v1.x ? (v1.x + (v2.y - v1.y)) / ((v3.y - v1.y) * (v3.x - v1.x)) : v3.x;
+void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color)
+{
+    if(vv1.coordinates.y > vv2.coordinates.y) std::swap(vv1, vv2);
+    if(vv2.coordinates.y > vv3.coordinates.y) std::swap(vv2, vv3);
+    if(vv1.coordinates.y > vv2.coordinates.y) std::swap(vv1, vv2);
 
-//        glm::ivec2 v4( x, v2.y);
-//        this->fillBottomTriangle(v1, v2, v4, color);
-//        this->fillTopTriangle(v2, v4, v3, color);
-//    }
+    glm::vec3& v1 = vv1.coordinates;
+    glm::vec3& v2 = vv2.coordinates;
+    glm::vec3& v3 = vv3.coordinates;
+
+    glm::vec3 vnFace = (vv1.normal + vv2.normal + vv3.normal) / 3.0f;
+    glm::vec3 centerPoint = (vv1.worldCoordinates + vv2.worldCoordinates + vv3.worldCoordinates) / 3.0f;
+
+    glm::vec3 lightPos(0, 10, -10);
+
+    float ndotl = computeNDotL(centerPoint, vnFace, lightPos);
+    ScanLineData data;
+    data.ndotla = ndotl;
 
     float dV1V2;
     float dV1V3;
@@ -215,29 +200,39 @@ void Device::drawTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color)
 
     if(dV1V2 > dV1V3) {
         for(int y = v1.y; y <= v3.y; ++y) {
+            data.currentY = y;
             if(y < v2.y)
-                this->proccessScanLine(y, v1, v3, v1, v2, color);
+                this->proccessScanLine(data, vv1, vv3, vv1, vv2, color);
             else
-                this->proccessScanLine(y, v1, v3, v2, v3, color);
+                this->proccessScanLine(data, vv1, vv3, vv2, vv3, color);
         }
     } else {
         for(int y = v1.y; y <= v3.y; ++y) {
+            data.currentY = y;
             if(y < v2.y)
-                this->proccessScanLine(y, v1, v2, v1, v3, color);
+                this->proccessScanLine(data, vv1, vv2, vv1, vv3, color);
             else
-                this->proccessScanLine(y, v2, v3, v1, v3, color);
+                this->proccessScanLine(data, vv2, vv3, vv1, vv3, color);
         }
     }
 }
 
-glm::vec3 Device::project(glm::vec3 coord, glm::mat4 MVP)
+Vertex Device::project(Vertex& vertex, glm::mat4& MVP, glm::mat4& modelMatrix)
 {
-    auto point = MVP * glm::vec4(coord, 1.0f);
+    auto point = MVP * glm::vec4(vertex.coordinates, 1.0f);
     point /= point.w;
+
+    auto worldPoint = modelMatrix * glm::vec4(vertex.coordinates, 1.0f);
+    worldPoint /= worldPoint.w;
+    auto worldNormal = modelMatrix * glm::vec4(vertex.normal, 0.0f);
 
     float x = point.x * m_width + m_width / 2.0f;
     float y = -point.y * m_height + m_height / 2.0f;
-    return glm::vec3(x, y, point.z);
+    Vertex result;
+    result.coordinates = glm::vec3(x, y, point.z);
+    result.normal = glm::vec3(worldNormal);
+    result.worldCoordinates = glm::vec3(worldPoint);
+    return result;
 }
 
 //#define PARALLEL
@@ -250,13 +245,13 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 #ifdef PARALLEL
     struct vector {
         int index;
-        std::vector<glm::vec3> m_backingVector;
+        std::vector<Vertex> m_backingVector;
 
         vector(int size)
             :index(0), m_backingVector(size)
         {}
 
-        void push_back(glm::vec3& point)
+        void push_back(Vertex& point)
         {
             if(m_backingVector.size() == index)
                 m_backingVector.resize(index * 2);
@@ -269,9 +264,11 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
     vector quadrant3(500);
     vector quadrant4(500);
     vector quadrantCommon(500);
-#endif
+
     int halfWidth = m_width / 2;
     int halfHeight = m_height / 2;
+#endif
+
     for(Mesh& mesh : meshes) {
         auto modelMatrix = glm::translate(glm::mat4(1.0f), mesh.position()) *
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
@@ -283,17 +280,17 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
         int result;
 #endif
         for(Face& face : mesh.faces()) {
-            auto pointA = this->project(mesh.vertices()[face.A], MVP);
-            auto pointB = this->project(mesh.vertices()[face.B], MVP);
-            auto pointC = this->project(mesh.vertices()[face.C], MVP);
+            auto pointA = this->project(mesh.vertices()[face.A], MVP, modelMatrix);
+            auto pointB = this->project(mesh.vertices()[face.B], MVP, modelMatrix);
+            auto pointC = this->project(mesh.vertices()[face.C], MVP, modelMatrix);
 #ifdef PARALLEL
             result = 0;
-            result += pointA.x >= halfWidth ? 1 : 0;
-            result += pointB.x >= halfWidth ? 1 : 0;
-            result += pointC.x >= halfWidth ? 1 : 0;
-            result += pointA.y >= halfHeight ? 4 : 0;
-            result += pointB.y >= halfHeight ? 4 : 0;
-            result += pointC.y >= halfHeight ? 4 : 0;
+            result += pointA.coordinates.x >= halfWidth ? 1 : 0;
+            result += pointB.coordinates.x >= halfWidth ? 1 : 0;
+            result += pointC.coordinates.x >= halfWidth ? 1 : 0;
+            result += pointA.coordinates.y >= halfHeight ? 4 : 0;
+            result += pointB.coordinates.y >= halfHeight ? 4 : 0;
+            result += pointC.coordinates.y >= halfHeight ? 4 : 0;
 
             vector *p_quadrant = &quadrantCommon;
             switch(result) {
@@ -336,44 +333,19 @@ auto drawTask = [](Device* dev, vector &arr, Color colour)
         }
     #pragma omp section
        {
-//           int faceIndex = 0;
-//           for(auto itr = std::begin(quadrant2); itr != std::end(quadrant2); itr += 3) {
-//               auto color = (0.25f + (faceIndex % (quadrant2.size() / 3)) * 0.75f / (quadrant2.size() / 3)) * 255;
-//               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color::Green);
-//               ++faceIndex;
-//           }
         drawTask(this, quadrant2, Color::Green);
        }
     #pragma omp section
        {
-//           int faceIndex = 0;
-//           for(auto itr = std::begin(quadrant3); itr != std::end(quadrant3); itr += 3) {
-//               auto color = (0.25f + (faceIndex % (quadrant3.size() / 3)) * 0.75f / (quadrant3.size() / 3)) * 255;
-//               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color::Blue);
-//               ++faceIndex;
-//           }
         drawTask(this, quadrant3, Color::Blue);
        }
     #pragma omp section
        {
-//           int faceIndex = 0;
-//           for(auto itr = std::begin(quadrant4); itr != std::end(quadrant4); itr += 3) {
-//               auto color = (0.25f + (faceIndex % (quadrant4.size() / 3)) * 0.75f / (quadrant4.size() / 3)) * 255;
-//               this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color::White);
-//               ++faceIndex;
-//           }
         drawTask(this, quadrant4, Color::White);
        }
     }
 
-//    int faceIndex = 0;
-//    for(auto itr = std::begin(quadrantCommon); itr != std::end(quadrantCommon); itr += 3) {
-//        auto color = (0.25f + (faceIndex % (quadrantCommon.size() / 3)) * 0.75f / (quadrantCommon.size() / 3)) * 255;
-//        this->drawTriangle(*itr, *(itr + 1), *(itr + 2), Color(125, 125, 125, 255));
-//        ++faceIndex;
-//    }
     drawTask(this, quadrantCommon, Color(125, 125, 125, 255));
-
 #endif
 }
 
@@ -404,7 +376,12 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
             float x = verticesArray[i * verticesStep].ToFloat();
             float y = verticesArray[i * verticesStep + 1].ToFloat();
             float z = verticesArray[i * verticesStep + 2].ToFloat();
-            currentMesh.vertices()[i] = glm::vec3(x, y, z);
+            //Normals
+            float nx = verticesArray[i * verticesStep + 3].ToFloat();
+            float ny = verticesArray[i * verticesStep + 4].ToFloat();
+            float nz = verticesArray[i * verticesStep + 5].ToFloat();
+            currentMesh.vertices()[i].coordinates = glm::vec3(x, y, z);
+            currentMesh.vertices()[i].normal = glm::vec3(nx, ny, nz);
         }
 
         for(int i = 0; i < facesCount; ++i) {

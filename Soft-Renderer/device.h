@@ -11,6 +11,19 @@
 
 namespace SoftEngine
 {
+
+namespace // annonymous namespace
+{
+struct ScanLineData
+{
+    int currentY;
+    float ndotla;
+    float ndotlb;
+    float ndotlc;
+    float ndotld;
+};
+}
+
 class Device
 {
 private:
@@ -20,10 +33,8 @@ private:
     float *m_depthBuffer;
 
     void putPixel(int x, int y, float z, const Color color);
-    glm::vec3 project(glm::vec3 coord, glm::mat4 MVP);
-//    void fillTopTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
-//    void fillBottomTriangle(glm::ivec2 v1, glm::ivec2 v2, glm::ivec2 v3, Color color);
-    void proccessScanLine(int y, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, Color color);
+    Vertex project(Vertex& coord, glm::mat4& MVP, glm::mat4& modelMatrix);
+    void proccessScanLine(ScanLineData y, Vertex& v1, Vertex& v2, Vertex& v3,Vertex& v4, Color color);
 public:
     Device(int width, int height);
     ~Device();
@@ -41,7 +52,7 @@ public:
     void drawPoint(glm::vec3 point, Color color);
     void drawLine(glm::vec3 start, glm::vec3 end, Color color);
     void drawBLine(glm::vec3 start, glm::vec3 end, Color color);
-    void drawTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, Color color);
+    void drawTriangle(Vertex v1, Vertex v2, Vertex v3, Color color);
 };
 }//end of namespace
 
