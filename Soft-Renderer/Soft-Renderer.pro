@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS *= -fopenmp
+
 
 macx{
 LIBS += -L/usr/local/lib -lSDL2
@@ -12,6 +12,7 @@ INCLUDEPATH += /usr/local/include
 }
 
 win32{
+QMAKE_LFLAGS *= -fopenmp
 LIBS += C:\Libraries\SDL2-2.0.3\lib\x86\SDL2main.lib \
     C:\Libraries\SDL2-2.0.3\lib\x86\SDL2.lib
 INCLUDEPATH += C:\Libraries\SDL2-2.0.3\include \

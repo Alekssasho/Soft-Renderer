@@ -14,7 +14,7 @@ CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG
 CFLAGS        = -pipe -g -gdwarf-2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -mmacosx-version-min=10.7 -Wall -W -fPIE $(DEFINES)
-CXXFLAGS      = -pipe -g -gdwarf-2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7 -Wall -W -fPIE $(DEFINES)
+CXXFLAGS      = -pipe -fopenmp -g -gdwarf-2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7 -Wall -W -fPIE $(DEFINES)
 INCPATH       = -I../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/macx-clang -I../Soft-Renderer -I/usr/local/include -I.
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -stdlib=libc++ -mmacosx-version-min=10.7
@@ -965,7 +965,8 @@ device.o: ../Soft-Renderer/device.cpp ../Soft-Renderer/device.h \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_mat4.hpp \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_matrix.hpp \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/intrinsic_matrix.inl \
-		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_mat4.inl
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/gtx/simd_mat4.inl \
+		../Soft-Renderer/json/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o device.o ../Soft-Renderer/device.cpp
 
 color.o: ../Soft-Renderer/color.cpp ../Soft-Renderer/color.h \
