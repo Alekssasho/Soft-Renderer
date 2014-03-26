@@ -2,6 +2,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/ext.hpp"
+#include "glm/gtx/normalize_dot.hpp"
 #include "json/json.h"
 #include <algorithm>
 #include <cmath>
@@ -50,11 +51,6 @@ static glm::mat4 perspectiveFovLH(float fovy, float aspect, float znear, float z
     result[3][2] = -znear * zfar / (zfar - znear);
 
     return result;
-}
-
-static float lerp(float min, float max, float gradient)
-{
-    return min + (max - min) * glm::clamp<float>(gradient, 0.0f, 1.0f);
 }
 
 namespace SoftEngine
@@ -147,25 +143,23 @@ void Device::proccessScanLine(ScanLineData data, Vertex& va, Vertex& vb, Vertex&
     auto gradient1 = v1.y != v2.y ? (data.currentY - v1.y) / (v2.y - v1.y) : 1;
     auto gradient2 = v3.y != v4.y ? (data.currentY - v3.y) / (v4.y - v3.y) : 1;
 
-    int sx = static_cast<int>(lerp(v1.x, v2.x, gradient1));
-    int ex = static_cast<int>(lerp(v3.x, v4.x, gradient2));
+    int sx = static_cast<int>(glm::mix(v1.x, v2.x, gradient1));
+    int ex = static_cast<int>(glm::mix(v3.x, v4.x, gradient2));
 
-    float z1 = lerp(v1.z, v2.z, gradient1);
-    float z2 = lerp(v3.z, v4.z, gradient2);
+    float z1 = glm::mix(v1.z, v2.z, gradient1);
+    float z2 = glm::mix(v3.z, v4.z, gradient2);
 
     for(int x = sx; x < ex; ++x) {
         float gradient = (x - sx) / static_cast<float>(ex - sx);
         auto ndotl = data.ndotla;
-        this->drawPoint(glm::vec3(x, data.currentY, lerp(z1, z2, gradient)), color * ndotl);
+        this->drawPoint(glm::vec3(x, data.currentY, glm::mix(z1, z2, gradient)), color * ndotl);
     }
 }
 
-float computeNDotL(glm::vec3 vertex, glm::vec3 normal, glm::vec3 light)
+float computeNDotL(glm::vec3& vertex, glm::vec3& normal, glm::vec3& light)
 {
     auto lightDirection = light - vertex;
-    glm::normalize(normal);
-    glm::normalize(lightDirection);
-    return glm::max(0.0f, glm::dot<float>(normal, lightDirection));
+    return glm::max(0.0f, glm::normalizeDot(normal, lightDirection));
 }
 
 void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color)
@@ -224,7 +218,8 @@ Vertex Device::project(Vertex& vertex, glm::mat4& MVP, glm::mat4& modelMatrix)
 
     auto worldPoint = modelMatrix * glm::vec4(vertex.coordinates, 1.0f);
     worldPoint /= worldPoint.w;
-    auto worldNormal = modelMatrix * glm::vec4(vertex.normal, 0.0f);
+    auto worldNormal = modelMatrix * glm::vec4(vertex.normal, 1.0f);
+    worldNormal /= worldNormal.w;
 
     float x = point.x * m_width + m_width / 2.0f;
     float y = -point.y * m_height + m_height / 2.0f;
@@ -235,7 +230,7 @@ Vertex Device::project(Vertex& vertex, glm::mat4& MVP, glm::mat4& modelMatrix)
     return result;
 }
 
-//#define PARALLEL
+#define PARALLEL
 
 void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 {
@@ -304,8 +299,8 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
             p_quadrant->push_back(pointB);
             p_quadrant->push_back(pointC);
 #else
-            auto color = (0.25f + (faceIndex % mesh.faces().size()) * 0.75f / mesh.faces().size()) * 255;
-            this->drawTriangle(pointA, pointB, pointC, Color(color, color, color, 255));
+//            auto color = (0.25f + (faceIndex % mesh.faces().size()) * 0.75f / mesh.faces().size()) * 255;
+            this->drawTriangle(pointA, pointB, pointC, Color(255, 255, 255, 255));
             ++faceIndex;
 #endif
 
@@ -316,11 +311,11 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 
 auto drawTask = [](Device* dev, vector &arr, Color colour)
 {
-    int faceIndex = 0;
+//    int faceIndex = 0;
     for(auto i = 0; i < arr.index; i += 3) {
-        auto color = (0.25f + (faceIndex % (arr.m_backingVector.size() / 3)) * 0.75f / (arr.m_backingVector.size() / 3)) * 255;
-        dev->drawTriangle(arr.m_backingVector[i], arr.m_backingVector[i + 1], arr.m_backingVector[i + 2], Color(color, color, color, 255));
-        ++faceIndex;
+//        auto color = (0.25f + (faceIndex % (arr.m_backingVector.size() / 3)) * 0.75f / (arr.m_backingVector.size() / 3)) * 255;
+        dev->drawTriangle(arr.m_backingVector[i], arr.m_backingVector[i + 1], arr.m_backingVector[i + 2], Color(255, 255, 255, 255));
+//        ++faceIndex;
     }
 };
 
