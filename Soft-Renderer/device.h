@@ -21,6 +21,14 @@ struct ScanLineData
     float ndotlb;
     float ndotlc;
     float ndotld;
+    float ua;
+    float ub;
+    float uc;
+    float ud;
+    float va;
+    float vb;
+    float vc;
+    float vd;
 };
 }
 
@@ -34,7 +42,7 @@ private:
 
     void putPixel(int x, int y, float z, const Color color);
     Vertex project(Vertex& coord, glm::mat4& MVP, glm::mat4& modelMatrix);
-    void proccessScanLine(ScanLineData y, Vertex& v1, Vertex& v2, Vertex& v3,Vertex& v4, Color color);
+    void proccessScanLine(ScanLineData y, Vertex& v1, Vertex& v2, Vertex& v3,Vertex& v4, Color color, const Texture& texture);
 public:
     Device(int width, int height);
     ~Device();
@@ -52,7 +60,7 @@ public:
     void drawPoint(glm::vec3 point, Color color);
     void drawLine(glm::vec3 start, glm::vec3 end, Color color);
     void drawBLine(glm::vec3 start, glm::vec3 end, Color color);
-    void drawTriangle(Vertex v1, Vertex v2, Vertex v3, Color color);
+    void drawTriangle(Vertex v1, Vertex v2, Vertex v3, Color color, const Texture& texture);
 };
 }//end of namespace
 

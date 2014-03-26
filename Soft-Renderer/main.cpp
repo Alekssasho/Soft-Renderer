@@ -1,12 +1,14 @@
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 #include <iostream>
 #include "device.h"
 #include "camera.h"
 #include "mesh.h"
 #include "color.h"
+#include "texture.h"
 
-const int WIDTH = 1280;
-const int HEIGHT = 800;
+const int WIDTH = 800;
+const int HEIGHT = 500;
 const int FPS = 30;
 const int SECONDS_PER_FRAME = 1000 / FPS;
 
@@ -116,6 +118,8 @@ int main(int argc, char* argv[])
 
     SDL_Init(SDL_INIT_VIDEO);
 
+    IMG_Init(IMG_INIT_JPG);
+
     p_window = SDL_CreateWindow("Soft Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
 
     p_renderer = SDL_CreateRenderer(p_window, -1, 0);
@@ -171,6 +175,7 @@ int main(int argc, char* argv[])
     SDL_DestroyRenderer(p_renderer);
     SDL_DestroyWindow(p_window);
 
+    IMG_Quit();
     SDL_Quit();
 
     return 0;

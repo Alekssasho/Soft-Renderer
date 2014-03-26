@@ -15,7 +15,7 @@ std::ostream& operator<<(std::ostream& out, const Color& color)
     return out;
 }
 
-Color operator*(Color& color, float scalar)
+Color operator*(const Color& color, float scalar)
 {
     float red = static_cast<float>(color.r()) / 255.0f;
     float green = static_cast<float>(color.g()) / 255.0f;
@@ -30,6 +30,26 @@ Color operator*(Color& color, float scalar)
     int iblue = static_cast<int>(blue * 255.0f);
 
     return Color(ired, igreen, iblue, color.a());
+}
+
+Color operator*(const Color& lhs, const Color& rhs)
+{
+    float redl = static_cast<float>(lhs.r()) / 255.0f;
+    float greenl = static_cast<float>(lhs.g()) / 255.0f;
+    float bluel = static_cast<float>(lhs.b()) / 255.0f;
+
+    float redr = static_cast<float>(rhs.r()) / 255.0f;
+    float greenr = static_cast<float>(rhs.g()) / 255.0f;
+    float bluer = static_cast<float>(rhs.b()) / 255.0f;
+
+    redl *= redr;
+    greenl *= greenr;
+    bluel *= bluer;
+
+    int ired = static_cast<int>(redl * 255.0f);
+    int igreen = static_cast<int>(greenl * 255.0f);
+    int iblue = static_cast<int>(bluel * 255.0f);
+    return Color(ired, igreen, iblue, lhs.a());
 }
 
 }// end of namespace

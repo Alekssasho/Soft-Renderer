@@ -18,7 +18,7 @@ CXXFLAGS      = -pipe -fopenmp -g -gdwarf-2 -isysroot /Applications/Xcode.app/Co
 INCPATH       = -I../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/macx-clang -I../Soft-Renderer -I/usr/local/include -I.
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -stdlib=libc++ -mmacosx-version-min=10.7
-LIBS          = $(SUBLIBS) -L/usr/local/lib -lSDL2 
+LIBS          = $(SUBLIBS) -L/usr/local/lib -lSDL2 -lSDL2_image 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 QMAKE         = /Users/aleksandar/Qt5.2.0/5.2.0/clang_64/bin/qmake
@@ -50,13 +50,15 @@ SOURCES       = ../Soft-Renderer/main.cpp \
 		../Soft-Renderer/mesh.cpp \
 		../Soft-Renderer/device.cpp \
 		../Soft-Renderer/color.cpp \
-		../Soft-Renderer/json/json.cpp 
+		../Soft-Renderer/json/json.cpp \
+		../Soft-Renderer/texture.cpp 
 OBJECTS       = main.o \
 		camera.o \
 		mesh.o \
 		device.o \
 		color.o \
-		json.o
+		json.o \
+		texture.o
 DIST          = ../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/qdevice.pri \
 		../../../../Qt5.2.0/5.2.0/clang_64/mkspecs/features/device_config.prf \
@@ -503,6 +505,7 @@ main.o: ../Soft-Renderer/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/include/SDL2/SDL_system.h \
 		/usr/local/include/SDL2/SDL_timer.h \
 		/usr/local/include/SDL2/SDL_version.h \
+		/usr/local/include/SDL2/SDL_image.h \
 		../Soft-Renderer/device.h \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/glm.hpp \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_fixes.hpp \
@@ -582,7 +585,8 @@ main.o: ../Soft-Renderer/main.cpp /usr/local/include/SDL2/SDL.h \
 		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.inl \
 		../Soft-Renderer/camera.h \
 		../Soft-Renderer/mesh.h \
-		../Soft-Renderer/color.h
+		../Soft-Renderer/color.h \
+		../Soft-Renderer/texture.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Soft-Renderer/main.cpp
 
 camera.o: ../Soft-Renderer/camera.cpp ../Soft-Renderer/camera.h \
@@ -1055,6 +1059,130 @@ color.o: ../Soft-Renderer/color.cpp ../Soft-Renderer/color.h \
 
 json.o: ../Soft-Renderer/json/json.cpp ../Soft-Renderer/json/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json.o ../Soft-Renderer/json/json.cpp
+
+texture.o: ../Soft-Renderer/texture.cpp ../Soft-Renderer/texture.h \
+		/usr/local/include/SDL2/SDL_image.h \
+		/usr/local/include/SDL2/SDL.h \
+		/usr/local/include/SDL2/SDL_main.h \
+		/usr/local/include/SDL2/SDL_stdinc.h \
+		/usr/local/include/SDL2/SDL_config.h \
+		/usr/local/include/SDL2/SDL_platform.h \
+		/usr/local/include/SDL2/begin_code.h \
+		/usr/local/include/SDL2/close_code.h \
+		/usr/local/include/SDL2/SDL_assert.h \
+		/usr/local/include/SDL2/SDL_atomic.h \
+		/usr/local/include/SDL2/SDL_audio.h \
+		/usr/local/include/SDL2/SDL_error.h \
+		/usr/local/include/SDL2/SDL_endian.h \
+		/usr/local/include/SDL2/SDL_mutex.h \
+		/usr/local/include/SDL2/SDL_thread.h \
+		/usr/local/include/SDL2/SDL_rwops.h \
+		/usr/local/include/SDL2/SDL_clipboard.h \
+		/usr/local/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/include/SDL2/SDL_events.h \
+		/usr/local/include/SDL2/SDL_video.h \
+		/usr/local/include/SDL2/SDL_pixels.h \
+		/usr/local/include/SDL2/SDL_rect.h \
+		/usr/local/include/SDL2/SDL_surface.h \
+		/usr/local/include/SDL2/SDL_blendmode.h \
+		/usr/local/include/SDL2/SDL_keyboard.h \
+		/usr/local/include/SDL2/SDL_keycode.h \
+		/usr/local/include/SDL2/SDL_scancode.h \
+		/usr/local/include/SDL2/SDL_mouse.h \
+		/usr/local/include/SDL2/SDL_joystick.h \
+		/usr/local/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/include/SDL2/SDL_quit.h \
+		/usr/local/include/SDL2/SDL_gesture.h \
+		/usr/local/include/SDL2/SDL_touch.h \
+		/usr/local/include/SDL2/SDL_filesystem.h \
+		/usr/local/include/SDL2/SDL_haptic.h \
+		/usr/local/include/SDL2/SDL_hints.h \
+		/usr/local/include/SDL2/SDL_loadso.h \
+		/usr/local/include/SDL2/SDL_log.h \
+		/usr/local/include/SDL2/SDL_messagebox.h \
+		/usr/local/include/SDL2/SDL_power.h \
+		/usr/local/include/SDL2/SDL_render.h \
+		/usr/local/include/SDL2/SDL_system.h \
+		/usr/local/include/SDL2/SDL_timer.h \
+		/usr/local/include/SDL2/SDL_version.h \
+		../Soft-Renderer/color.h \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/glm.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_fixes.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/fwd.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_int.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/setup.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_float.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/precision.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/vec2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_swizzle.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_swizzle_func.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec2.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/vec3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec3.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/vec4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec4.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat2x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x2.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat2x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x3.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat2x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat2x4.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat3x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x2.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat3x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x3.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat3x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat3x4.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat4x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x2.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x2.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat4x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x3.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x3.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/mat4x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x4.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_mat4x4.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/trigonometric.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_trigonometric.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_trigonometric.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/_vectorize.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec1.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_vec1.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/exponential.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_exponential.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_exponential.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_vector_relational.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_vector_relational.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/common.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_common.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_common.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/packing.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_packing.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_packing.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_half.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/type_half.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/geometric.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_geometric.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_geometric.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/matrix.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_matrix.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_matrix.inl \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/vector_relational.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/integer.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.hpp \
+		/usr/local/Cellar/glm/0.9.5.2/include/glm/detail/func_integer.inl
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o texture.o ../Soft-Renderer/texture.cpp
 
 ####### Install
 

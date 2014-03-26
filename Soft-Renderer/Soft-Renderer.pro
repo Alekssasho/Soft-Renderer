@@ -7,7 +7,7 @@ QMAKE_CXXFLAGS += -fopenmp
 
 
 macx{
-LIBS += -L/usr/local/lib -lSDL2
+LIBS += -L/usr/local/lib -lSDL2 -lSDL2_image
 INCLUDEPATH += /usr/local/include
 }
 
@@ -24,12 +24,14 @@ SOURCES += main.cpp \
     mesh.cpp \
     device.cpp \
     color.cpp \
-    json/json.cpp
+    json/json.cpp \
+    texture.cpp
 
 HEADERS += \
     camera.h \
     mesh.h \
     device.h \
     color.h \
-    json/json.h
+    json/json.h \
+    texture.h
 

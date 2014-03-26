@@ -82,7 +82,8 @@ public:
     static const Color Black;
 };
 
-Color operator*(Color& color, float scalar);
+Color operator*(const Color& lhs, const Color& rhs);
+Color operator*(const Color& color, float scalar);
 
 std::ostream& operator<<(std::ostream& out, const Color& color);
 

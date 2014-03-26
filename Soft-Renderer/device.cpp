@@ -10,6 +10,8 @@
 #include <string>
 #include <iostream>
 #include <climits>
+#include <unordered_map>
+#include <utility>
 
 //#include <omp.h>
 
@@ -133,7 +135,7 @@ void Device::drawBLine(glm::vec3 start, glm::vec3 end, Color color)
     }
 }
 
-void Device::proccessScanLine(ScanLineData data, Vertex& va, Vertex& vb, Vertex& vc, Vertex& vd, Color color)
+void Device::proccessScanLine(ScanLineData data, Vertex& va, Vertex& vb, Vertex& vc, Vertex& vd, Color color, const Texture& texture)
 {
     glm::vec3& v1 = va.coordinates;
     glm::vec3& v2 = vb.coordinates;
@@ -149,10 +151,23 @@ void Device::proccessScanLine(ScanLineData data, Vertex& va, Vertex& vb, Vertex&
     float z1 = glm::mix(v1.z, v2.z, gradient1);
     float z2 = glm::mix(v3.z, v4.z, gradient2);
 
+    float snl = glm::mix(data.ndotla, data.ndotlb, gradient1);
+    float enl = glm::mix(data.ndotlc, data.ndotld, gradient2);
+
+    float su = glm::mix(data.ua, data.ub, gradient1);
+    float eu = glm::mix(data.uc, data.ud, gradient2);
+    float sv = glm::mix(data.va, data.vb, gradient1);
+    float ev = glm::mix(data.vc, data.vd, gradient2);
+
     for(int x = sx; x < ex; ++x) {
         float gradient = (x - sx) / static_cast<float>(ex - sx);
-        auto ndotl = data.ndotla;
-        this->drawPoint(glm::vec3(x, data.currentY, glm::mix(z1, z2, gradient)), color * ndotl);
+        float ndotl = glm::mix(snl, enl, gradient);
+        float u = glm::mix(su, eu, gradient);
+        float v = glm::mix(sv, ev, gradient);
+        float z = glm::mix(z1, z2, gradient);
+        Color textureColor;
+        textureColor = texture.map(u, v);
+        this->drawPoint(glm::vec3(x, data.currentY, z), operator*(color, (textureColor * ndotl)));
     }
 }
 
@@ -162,7 +177,7 @@ float computeNDotL(glm::vec3& vertex, glm::vec3& normal, glm::vec3& light)
     return glm::max(0.0f, glm::normalizeDot(normal, lightDirection));
 }
 
-void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color)
+void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color, const Texture& texture)
 {
     if(vv1.coordinates.y > vv2.coordinates.y) std::swap(vv1, vv2);
     if(vv2.coordinates.y > vv3.coordinates.y) std::swap(vv2, vv3);
@@ -172,14 +187,13 @@ void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color)
     glm::vec3& v2 = vv2.coordinates;
     glm::vec3& v3 = vv3.coordinates;
 
-    glm::vec3 vnFace = (vv1.normal + vv2.normal + vv3.normal) / 3.0f;
-    glm::vec3 centerPoint = (vv1.worldCoordinates + vv2.worldCoordinates + vv3.worldCoordinates) / 3.0f;
-
     glm::vec3 lightPos(0, 10, -10);
 
-    float ndotl = computeNDotL(centerPoint, vnFace, lightPos);
+    float nl1 = computeNDotL(vv1.worldCoordinates, vv1.normal, lightPos);
+    float nl2 = computeNDotL(vv2.worldCoordinates, vv2.normal, lightPos);
+    float nl3 = computeNDotL(vv3.worldCoordinates, vv3.normal, lightPos);
+
     ScanLineData data;
-    data.ndotla = ndotl;
 
     float dV1V2;
     float dV1V3;
@@ -195,18 +209,68 @@ void Device::drawTriangle(Vertex vv1, Vertex vv2, Vertex vv3, Color color)
     if(dV1V2 > dV1V3) {
         for(int y = v1.y; y <= v3.y; ++y) {
             data.currentY = y;
-            if(y < v2.y)
-                this->proccessScanLine(data, vv1, vv3, vv1, vv2, color);
-            else
-                this->proccessScanLine(data, vv1, vv3, vv2, vv3, color);
+            if(y < v2.y) {
+                data.ndotla = nl1;
+                data.ndotlb = nl3;
+                data.ndotlc = nl1;
+                data.ndotld = nl2;
+                data.ua = vv1.textureCoordinates.x;
+                data.va = vv1.textureCoordinates.y;
+                data.ub = vv3.textureCoordinates.x;
+                data.vb = vv3.textureCoordinates.y;
+                data.uc = vv1.textureCoordinates.x;
+                data.vc = vv1.textureCoordinates.y;
+                data.ud = vv2.textureCoordinates.x;
+                data.vd = vv2.textureCoordinates.y;
+                this->proccessScanLine(data, vv1, vv3, vv1, vv2, color, texture);
+            } else {
+                data.ndotla = nl1;
+                data.ndotlb = nl3;
+                data.ndotlc = nl2;
+                data.ndotld = nl3;
+                data.ua = vv1.textureCoordinates.x;
+                data.va = vv1.textureCoordinates.y;
+                data.ub = vv3.textureCoordinates.x;
+                data.vb = vv3.textureCoordinates.y;
+                data.uc = vv2.textureCoordinates.x;
+                data.vc = vv2.textureCoordinates.y;
+                data.ud = vv3.textureCoordinates.x;
+                data.vd = vv3.textureCoordinates.y;
+                this->proccessScanLine(data, vv1, vv3, vv2, vv3, color, texture);
+            }
         }
     } else {
         for(int y = v1.y; y <= v3.y; ++y) {
             data.currentY = y;
-            if(y < v2.y)
-                this->proccessScanLine(data, vv1, vv2, vv1, vv3, color);
-            else
-                this->proccessScanLine(data, vv2, vv3, vv1, vv3, color);
+            if(y < v2.y) {
+                data.ndotla = nl1;
+                data.ndotlb = nl2;
+                data.ndotlc = nl1;
+                data.ndotld = nl3;
+                data.ua = vv1.textureCoordinates.x;
+                data.va = vv1.textureCoordinates.y;
+                data.ub = vv2.textureCoordinates.x;
+                data.vb = vv2.textureCoordinates.y;
+                data.uc = vv1.textureCoordinates.x;
+                data.vc = vv1.textureCoordinates.y;
+                data.ud = vv3.textureCoordinates.x;
+                data.vd = vv3.textureCoordinates.y;
+                this->proccessScanLine(data, vv1, vv2, vv1, vv3, color, texture);
+            } else {
+                data.ndotla = nl2;
+                data.ndotlb = nl3;
+                data.ndotlc = nl1;
+                data.ndotld = nl3;
+                data.ua = vv2.textureCoordinates.x;
+                data.va = vv2.textureCoordinates.y;
+                data.ub = vv3.textureCoordinates.x;
+                data.vb = vv3.textureCoordinates.y;
+                data.uc = vv1.textureCoordinates.x;
+                data.vc = vv1.textureCoordinates.y;
+                data.ud = vv3.textureCoordinates.x;
+                data.vd = vv3.textureCoordinates.y;
+                this->proccessScanLine(data, vv2, vv3, vv1, vv3, color, texture);
+            }
         }
     }
 }
@@ -227,10 +291,11 @@ Vertex Device::project(Vertex& vertex, glm::mat4& MVP, glm::mat4& modelMatrix)
     result.coordinates = glm::vec3(x, y, point.z);
     result.normal = glm::vec3(worldNormal);
     result.worldCoordinates = glm::vec3(worldPoint);
+    result.textureCoordinates = vertex.textureCoordinates;
     return result;
 }
 
-#define PARALLEL
+//#define PARALLEL
 
 void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 {
@@ -269,9 +334,7 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
 
         auto MVP = projectionMatrix * viewMatrix * modelMatrix;
-#ifndef PARALLEL
-        int faceIndex = 0;
-#else
+#ifdef PARALLEL
         int result;
 #endif
         for(Face& face : mesh.faces()) {
@@ -299,9 +362,7 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
             p_quadrant->push_back(pointB);
             p_quadrant->push_back(pointC);
 #else
-//            auto color = (0.25f + (faceIndex % mesh.faces().size()) * 0.75f / mesh.faces().size()) * 255;
-            this->drawTriangle(pointA, pointB, pointC, Color(255, 255, 255, 255));
-            ++faceIndex;
+            this->drawTriangle(pointA, pointB, pointC, Color(255, 255, 255, 255), mesh.texture());
 #endif
 
         }
@@ -311,11 +372,8 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 
 auto drawTask = [](Device* dev, vector &arr, Color colour)
 {
-//    int faceIndex = 0;
     for(auto i = 0; i < arr.index; i += 3) {
-//        auto color = (0.25f + (faceIndex % (arr.m_backingVector.size() / 3)) * 0.75f / (arr.m_backingVector.size() / 3)) * 255;
         dev->drawTriangle(arr.m_backingVector[i], arr.m_backingVector[i + 1], arr.m_backingVector[i + 2], Color(255, 255, 255, 255));
-//        ++faceIndex;
     }
 };
 
@@ -344,6 +402,14 @@ auto drawTask = [](Device* dev, vector &arr, Color colour)
 #endif
 }
 
+class Material
+{
+public:
+    std::string name;
+    std::string id;
+    std::string diffuseTextureName;
+};
+
 void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
 {
     std::ifstream file(filename);
@@ -352,6 +418,17 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
     json::Value data = json::Deserialize(content);
     json::Object obj = data.ToObject();
     json::Array meshes = obj["meshes"];
+    std::unordered_map<std::string, Material> materials;
+    json::Array mats = obj["materials"];
+    for(auto& material : mats) {
+        Material mat;
+        mat.name = material["name"].ToString();
+        mat.id = material["id"].ToString();
+        mat.diffuseTextureName = material["diffuseTexture"]["name"].ToString();
+
+        materials.insert(std::make_pair(mat.id, mat));
+    }
+
     for(auto& mesh : meshes) {
         auto verticesArray = mesh["vertices"];
         auto indicesArray = mesh["indices"];
@@ -377,6 +454,11 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
             float nz = verticesArray[i * verticesStep + 5].ToFloat();
             currentMesh.vertices()[i].coordinates = glm::vec3(x, y, z);
             currentMesh.vertices()[i].normal = glm::vec3(nx, ny, nz);
+            if(uvCount > 0) {
+                float u = verticesArray[i * verticesStep + 6].ToFloat();
+                float v = verticesArray[i * verticesStep + 7].ToFloat();
+                currentMesh.vertices()[i].textureCoordinates = glm::vec2(u, v);
+            }
         }
 
         for(int i = 0; i < facesCount; ++i) {
@@ -388,8 +470,12 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
 
         auto position = mesh["position"].ToArray();
         currentMesh.setPosition(glm::vec3(position[0].ToFloat(), position[1].ToFloat(), position[2].ToFloat()));
+        if(uvCount > 0) {
+            std::string meshTextureId = mesh["materialId"].ToString();
+            std::string meshTextureName = materials[meshTextureId].diffuseTextureName;
+            currentMesh.setTexture(new Texture(meshTextureName, 512, 512));
+        }
     }            
-
 }
 
 }//end of namespace
