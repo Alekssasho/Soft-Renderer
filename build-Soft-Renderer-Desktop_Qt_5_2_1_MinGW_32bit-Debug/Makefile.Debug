@@ -17,7 +17,7 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -fopenmp -g -std=c++0x -frtti -
 INCPATH       = -I..\Soft-Renderer -I"..\..\..\Libraries\SDL2-2.0.3\include" -I"..\..\..\Libraries\glm" -I"." -I"..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\win32-g++"
 LINKER      =        g++
 LFLAGS        =        -fopenmp -Wl,-subsystem,windows -mthreads
-LIBS        =        C:\Libraries\SDL2-2.0.3\lib\x86\SDL2main.lib C:\Libraries\SDL2-2.0.3\lib\x86\SDL2.lib 
+LIBS        =        C:\Libraries\SDL2_image-2.0.0\i686-w64-mingw32\lib\libSDL2_image.a C:\Libraries\SDL2-2.0.3\lib\x86\SDL2main.lib C:\Libraries\SDL2-2.0.3\lib\x86\SDL2.lib 
 QMAKE         = C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -48,13 +48,15 @@ SOURCES       = ..\Soft-Renderer\main.cpp \
 		..\Soft-Renderer\mesh.cpp \
 		..\Soft-Renderer\device.cpp \
 		..\Soft-Renderer\color.cpp \
-		..\Soft-Renderer\json\json.cpp 
+		..\Soft-Renderer\json\json.cpp \
+		..\Soft-Renderer\texture.cpp 
 OBJECTS       = debug/main.o \
 		debug/camera.o \
 		debug/mesh.o \
 		debug/device.o \
 		debug/color.o \
-		debug/json.o
+		debug/json.o \
+		debug/texture.o
 
 DIST          = 
 QMAKE_TARGET  = Soft-Renderer
@@ -95,7 +97,7 @@ dist:
 	$(ZIP) Soft-Renderer.zip $(SOURCES) $(DIST) ..\Soft-Renderer\Soft-Renderer.pro ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\spec_pre.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\qdevice.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\device_config.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\common\shell-win32.conf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\qconfig.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_clucene_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_core.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_declarative.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_declarative_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_help.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_network.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_platformsupport_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_script.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkit.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkit_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkitwidgets.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkitwidgets_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\qt_functions.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\qt_config.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\win32-g++\qmake.conf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\spec_post.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\exclusive_builds.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\default_pre.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\win32\default_pre.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\resolve_config.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\default_post.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\build_pass.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\c++11.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\qml_debug.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\declarative_debug.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\win32\rtti.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\warn_on.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\win32\windows.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\testcase_targets.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\exceptions.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\yacc.prf ..\..\..\Qt\Qt5.2.1\5.2.1\mingw48_32\mkspecs\features\lex.prf ..\Soft-Renderer\Soft-Renderer.pro  YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\main.o debug\camera.o debug\mesh.o debug\device.o debug\color.o debug\json.o
+	-$(DEL_FILE) debug\main.o debug\camera.o debug\mesh.o debug\device.o debug\color.o debug\json.o debug\texture.o
 
 distclean: clean
 	-$(DEL_FILE) $(DESTDIR_TARGET)
@@ -158,6 +160,7 @@ debug/main.o: ../Soft-Renderer/main.cpp ../../../Libraries/SDL2-2.0.3/include/SD
 		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_system.h \
 		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_timer.h \
 		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_version.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_image.h \
 		../Soft-Renderer/device.h \
 		../../../Libraries/glm/glm/glm.hpp \
 		../../../Libraries/glm/glm/detail/_fixes.hpp \
@@ -237,6 +240,7 @@ debug/main.o: ../Soft-Renderer/main.cpp ../../../Libraries/SDL2-2.0.3/include/SD
 		../../../Libraries/glm/glm/detail/func_integer.inl \
 		../Soft-Renderer/camera.h \
 		../Soft-Renderer/mesh.h \
+		../Soft-Renderer/texture.h \
 		../Soft-Renderer/color.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o ..\Soft-Renderer\main.cpp
 
@@ -395,7 +399,53 @@ debug/mesh.o: ../Soft-Renderer/mesh.cpp ../Soft-Renderer/mesh.h \
 		../../../Libraries/glm/glm/vector_relational.hpp \
 		../../../Libraries/glm/glm/integer.hpp \
 		../../../Libraries/glm/glm/detail/func_integer.hpp \
-		../../../Libraries/glm/glm/detail/func_integer.inl
+		../../../Libraries/glm/glm/detail/func_integer.inl \
+		../Soft-Renderer/texture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_image.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_main.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_stdinc.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_config.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_platform.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/begin_code.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/close_code.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_assert.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_atomic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_audio.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_error.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_endian.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mutex.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_thread.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rwops.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_clipboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_cpuinfo.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_events.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_video.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_pixels.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rect.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_surface.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_blendmode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keyboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keycode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_scancode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mouse.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_joystick.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gamecontroller.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_quit.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gesture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_touch.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_filesystem.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_haptic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_hints.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_loadso.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_log.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_messagebox.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_power.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_render.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_system.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_timer.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_version.h \
+		../Soft-Renderer/color.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\mesh.o ..\Soft-Renderer\mesh.cpp
 
 debug/device.o: ../Soft-Renderer/device.cpp ../Soft-Renderer/device.h \
@@ -482,6 +532,46 @@ debug/device.o: ../Soft-Renderer/device.cpp ../Soft-Renderer/device.h \
 		../../../Libraries/glm/glm/detail/func_integer.inl \
 		../Soft-Renderer/camera.h \
 		../Soft-Renderer/mesh.h \
+		../Soft-Renderer/texture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_image.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_main.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_assert.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_atomic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_audio.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_error.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_endian.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mutex.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_thread.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rwops.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_clipboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_cpuinfo.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_events.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_video.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_pixels.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rect.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_surface.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_blendmode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keyboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keycode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_scancode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mouse.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_joystick.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gamecontroller.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_quit.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gesture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_touch.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_filesystem.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_haptic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_hints.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_loadso.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_log.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_messagebox.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_power.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_render.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_system.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_timer.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_version.h \
 		../Soft-Renderer/color.h \
 		../../../Libraries/glm/glm/gtc/matrix_transform.hpp \
 		../../../Libraries/glm/glm/gtc/matrix_transform.inl \
@@ -710,6 +800,130 @@ debug/color.o: ../Soft-Renderer/color.cpp ../Soft-Renderer/color.h \
 
 debug/json.o: ../Soft-Renderer/json/json.cpp ../Soft-Renderer/json/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\json.o ..\Soft-Renderer\json\json.cpp
+
+debug/texture.o: ../Soft-Renderer/texture.cpp ../Soft-Renderer/texture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_image.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_main.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_stdinc.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_config.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_platform.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/begin_code.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/close_code.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_assert.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_atomic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_audio.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_error.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_endian.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mutex.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_thread.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rwops.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_clipboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_cpuinfo.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_events.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_video.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_pixels.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_rect.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_surface.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_blendmode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keyboard.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_keycode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_scancode.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_mouse.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_joystick.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gamecontroller.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_quit.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_gesture.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_touch.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_filesystem.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_haptic.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_hints.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_loadso.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_log.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_messagebox.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_power.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_render.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_system.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_timer.h \
+		../../../Libraries/SDL2-2.0.3/include/SDL2/SDL_version.h \
+		../Soft-Renderer/color.h \
+		../../../Libraries/glm/glm/glm.hpp \
+		../../../Libraries/glm/glm/detail/_fixes.hpp \
+		../../../Libraries/glm/glm/fwd.hpp \
+		../../../Libraries/glm/glm/detail/type_int.hpp \
+		../../../Libraries/glm/glm/detail/setup.hpp \
+		../../../Libraries/glm/glm/detail/type_float.hpp \
+		../../../Libraries/glm/glm/detail/type_vec.hpp \
+		../../../Libraries/glm/glm/detail/precision.hpp \
+		../../../Libraries/glm/glm/detail/type_mat.hpp \
+		../../../Libraries/glm/glm/vec2.hpp \
+		../../../Libraries/glm/glm/detail/type_vec2.hpp \
+		../../../Libraries/glm/glm/detail/_swizzle.hpp \
+		../../../Libraries/glm/glm/detail/_swizzle_func.hpp \
+		../../../Libraries/glm/glm/detail/type_vec2.inl \
+		../../../Libraries/glm/glm/vec3.hpp \
+		../../../Libraries/glm/glm/detail/type_vec3.hpp \
+		../../../Libraries/glm/glm/detail/type_vec3.inl \
+		../../../Libraries/glm/glm/vec4.hpp \
+		../../../Libraries/glm/glm/detail/type_vec4.hpp \
+		../../../Libraries/glm/glm/detail/type_vec4.inl \
+		../../../Libraries/glm/glm/mat2x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x2.inl \
+		../../../Libraries/glm/glm/mat2x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x3.inl \
+		../../../Libraries/glm/glm/mat2x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat2x4.inl \
+		../../../Libraries/glm/glm/mat3x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x2.inl \
+		../../../Libraries/glm/glm/mat3x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x3.inl \
+		../../../Libraries/glm/glm/mat3x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat3x4.inl \
+		../../../Libraries/glm/glm/mat4x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x2.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x2.inl \
+		../../../Libraries/glm/glm/mat4x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x3.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x3.inl \
+		../../../Libraries/glm/glm/mat4x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x4.hpp \
+		../../../Libraries/glm/glm/detail/type_mat4x4.inl \
+		../../../Libraries/glm/glm/trigonometric.hpp \
+		../../../Libraries/glm/glm/detail/func_trigonometric.hpp \
+		../../../Libraries/glm/glm/detail/func_trigonometric.inl \
+		../../../Libraries/glm/glm/detail/_vectorize.hpp \
+		../../../Libraries/glm/glm/detail/type_vec1.hpp \
+		../../../Libraries/glm/glm/detail/type_vec1.inl \
+		../../../Libraries/glm/glm/exponential.hpp \
+		../../../Libraries/glm/glm/detail/func_exponential.hpp \
+		../../../Libraries/glm/glm/detail/func_exponential.inl \
+		../../../Libraries/glm/glm/detail/func_vector_relational.hpp \
+		../../../Libraries/glm/glm/detail/func_vector_relational.inl \
+		../../../Libraries/glm/glm/common.hpp \
+		../../../Libraries/glm/glm/detail/func_common.hpp \
+		../../../Libraries/glm/glm/detail/func_common.inl \
+		../../../Libraries/glm/glm/packing.hpp \
+		../../../Libraries/glm/glm/detail/func_packing.hpp \
+		../../../Libraries/glm/glm/detail/func_packing.inl \
+		../../../Libraries/glm/glm/detail/type_half.hpp \
+		../../../Libraries/glm/glm/detail/type_half.inl \
+		../../../Libraries/glm/glm/geometric.hpp \
+		../../../Libraries/glm/glm/detail/func_geometric.hpp \
+		../../../Libraries/glm/glm/detail/func_geometric.inl \
+		../../../Libraries/glm/glm/matrix.hpp \
+		../../../Libraries/glm/glm/detail/func_matrix.hpp \
+		../../../Libraries/glm/glm/detail/func_matrix.inl \
+		../../../Libraries/glm/glm/vector_relational.hpp \
+		../../../Libraries/glm/glm/integer.hpp \
+		../../../Libraries/glm/glm/detail/func_integer.hpp \
+		../../../Libraries/glm/glm/detail/func_integer.inl
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\texture.o ..\Soft-Renderer\texture.cpp
 
 ####### Install
 

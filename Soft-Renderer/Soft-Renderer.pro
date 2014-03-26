@@ -13,7 +13,8 @@ INCLUDEPATH += /usr/local/include
 
 win32{
 QMAKE_LFLAGS *= -fopenmp
-LIBS += C:\Libraries\SDL2-2.0.3\lib\x86\SDL2main.lib \
+LIBS += C:\Libraries\SDL2_image-2.0.0\i686-w64-mingw32\lib\libSDL2_image.a \
+    C:\Libraries\SDL2-2.0.3\lib\x86\SDL2main.lib \
     C:\Libraries\SDL2-2.0.3\lib\x86\SDL2.lib
 INCLUDEPATH += C:\Libraries\SDL2-2.0.3\include \
             C:\Libraries\glm
@@ -34,4 +35,3 @@ HEADERS += \
     color.h \
     json/json.h \
     texture.h
-

@@ -27,12 +27,23 @@ Texture& Texture::operator=(Texture&& other)
 
 void Texture::load(std::string filename)
 {
-    m_surface = IMG_Load(("../" + filename).c_str());
-    if(!m_surface) {
+    SDL_Surface *image;
+    image = IMG_Load(("../" + filename).c_str());
+    if(!image) {
         std::cerr << "Cannot load image named " << filename << std::endl;
         std::cerr << "With error : " << IMG_GetError() << std::endl;
         return;
     }
+
+    m_surface = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGBA8888, 0);
+
+    if(!m_surface) {
+        std::cerr << "Cannot convert image named " << filename << std::endl;
+        std::cerr << "With error : " << SDL_GetError() << std::endl;
+    }
+
+
+    SDL_FreeSurface(image);
 }
 
 Color Texture::map(float tu, float tv) const

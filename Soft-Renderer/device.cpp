@@ -334,15 +334,13 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
 
         auto MVP = projectionMatrix * viewMatrix * modelMatrix;
-#ifdef PARALLEL
-        int result;
-#endif
+
         for(Face& face : mesh.faces()) {
             auto pointA = this->project(mesh.vertices()[face.A], MVP, modelMatrix);
             auto pointB = this->project(mesh.vertices()[face.B], MVP, modelMatrix);
             auto pointC = this->project(mesh.vertices()[face.C], MVP, modelMatrix);
 #ifdef PARALLEL
-            result = 0;
+            int result = 0;
             result += pointA.coordinates.x >= halfWidth ? 1 : 0;
             result += pointB.coordinates.x >= halfWidth ? 1 : 0;
             result += pointC.coordinates.x >= halfWidth ? 1 : 0;
@@ -366,40 +364,40 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
 #endif
 
         }
-    }
 #ifdef PARALLEL
 //std::cerr << quadrant1.size() << "  " << quadrant2.size() << " " << quadrant3.size() << " " << quadrant4.size() << " " << quadrantCommon.size() << std::endl;
 
-auto drawTask = [](Device* dev, vector &arr, Color colour)
-{
-    for(auto i = 0; i < arr.index; i += 3) {
-        dev->drawTriangle(arr.m_backingVector[i], arr.m_backingVector[i + 1], arr.m_backingVector[i + 2], Color(255, 255, 255, 255));
-    }
-};
+            auto drawTask = [](Device* dev, vector &arr, Mesh& mesh)
+            {
+                for(auto i = 0; i < arr.index; i += 3) {
+                    dev->drawTriangle(arr.m_backingVector[i], arr.m_backingVector[i + 1], arr.m_backingVector[i + 2], Color(255, 255, 255, 255), mesh.texture());
+                }
+            };
 
 #pragma omp parallel sections
-    {
-     #pragma omp section
         {
-//            std::cout << omp_get_num_thread();
-            drawTask(this, quadrant1, Color::Red);
+         #pragma omp section
+            {
+    //            std::cout << omp_get_num_thread();
+                drawTask(this, quadrant1, mesh);
+            }
+        #pragma omp section
+           {
+            drawTask(this, quadrant2, mesh);
+           }
+        #pragma omp section
+           {
+            drawTask(this, quadrant3, mesh);
+           }
+        #pragma omp section
+           {
+            drawTask(this, quadrant4, mesh);
+           }
         }
-    #pragma omp section
-       {
-        drawTask(this, quadrant2, Color::Green);
-       }
-    #pragma omp section
-       {
-        drawTask(this, quadrant3, Color::Blue);
-       }
-    #pragma omp section
-       {
-        drawTask(this, quadrant4, Color::White);
-       }
-    }
 
-    drawTask(this, quadrantCommon, Color(125, 125, 125, 255));
+        drawTask(this, quadrantCommon, mesh);
 #endif
+    }
 }
 
 class Material

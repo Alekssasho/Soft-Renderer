@@ -7,8 +7,8 @@
 #include "color.h"
 #include "texture.h"
 
-const int WIDTH = 800;
-const int HEIGHT = 500;
+const int WIDTH = 1280;
+const int HEIGHT = 800;
 const int FPS = 30;
 const int SECONDS_PER_FRAME = 1000 / FPS;
 
