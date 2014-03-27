@@ -14,6 +14,8 @@ struct Face
     int A;
     int B;
     int C;
+
+    glm::vec3 normal;
 };
 
 struct Vertex
@@ -55,6 +57,16 @@ public:
     void setPosition(const glm::vec3& position ) { m_position = position; }
     void setRotation(const glm::vec3& rotation) { m_rotation = rotation; }
     void setTexture(Texture* texture) { delete m_texture; m_texture = texture; }
+
+    void computeFaceNormal() {
+        for(Face& face : m_faces) {
+            auto &vertexA  = m_vertices[face.A];
+            auto &vertexB  = m_vertices[face.B];
+            auto &vertexC  = m_vertices[face.C];
+
+            face.normal = glm::normalize((vertexA.normal + vertexB.normal + vertexC.normal) / 3.0f);
+        }
+    }
 
 };
 

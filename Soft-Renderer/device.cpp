@@ -333,9 +333,19 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
         auto modelMatrix = glm::translate(glm::mat4(1.0f), mesh.position()) *
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
 
-        auto MVP = projectionMatrix * viewMatrix * modelMatrix;
+        auto MV = viewMatrix * modelMatrix;
+        auto MVP = projectionMatrix * MV;
 
         for(Face& face : mesh.faces()) {
+
+            auto transformedNormal = modelMatrix * glm::vec4(face.normal, 0.0f);
+            auto worldCoordinate = modelMatrix * glm::vec4(((mesh.vertices()[face.A].coordinates + mesh.vertices()[face.B].coordinates + mesh.vertices()[face.C].coordinates) / 3.0f), 1.0f);
+            auto cameraVector = camera.position() - glm::vec3(worldCoordinate);
+
+            auto cosAngle = glm::normalizeDot(cameraVector, glm::vec3(transformedNormal));
+            if(cosAngle < 0)
+                continue;
+
             auto pointA = this->project(mesh.vertices()[face.A], MVP, modelMatrix);
             auto pointB = this->project(mesh.vertices()[face.B], MVP, modelMatrix);
             auto pointC = this->project(mesh.vertices()[face.C], MVP, modelMatrix);
@@ -473,6 +483,8 @@ void Device::loadJSONFile(std::string filename, std::vector<Mesh> &meshesVector)
             std::string meshTextureName = materials[meshTextureId].diffuseTextureName;
             currentMesh.setTexture(new Texture(meshTextureName, 512, 512));
         }
+
+        currentMesh.computeFaceNormal();
     }            
 }
 
