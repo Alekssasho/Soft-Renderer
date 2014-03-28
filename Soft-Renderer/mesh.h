@@ -64,7 +64,9 @@ public:
             auto &vertexB  = m_vertices[face.B];
             auto &vertexC  = m_vertices[face.C];
 
-            face.normal = glm::normalize((vertexA.normal + vertexB.normal + vertexC.normal) / 3.0f);
+            auto a = vertexA.coordinates - vertexB.coordinates;
+            auto b = vertexA.coordinates - vertexC.coordinates;
+            face.normal = glm::normalize(glm::cross(b, a));
         }
     }
 

@@ -333,8 +333,7 @@ void Device::render(const Camera &camera, std::vector<Mesh> &meshes)
         auto modelMatrix = glm::translate(glm::mat4(1.0f), mesh.position()) *
                 glm::yawPitchRoll(mesh.rotation().y, mesh.rotation().x, mesh.rotation().z);
 
-        auto MV = viewMatrix * modelMatrix;
-        auto MVP = projectionMatrix * MV;
+        auto MVP = projectionMatrix * viewMatrix * modelMatrix;
 
         for(Face& face : mesh.faces()) {
 
